@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "upstream_base_url": "https://api.example.com/v1",
+  "discovery": {
+    "excluded_models": [],
+    "defaults": {
+      "context_window": 200000,
+      "input_modalities": ["text", "image"],
+      "supports_image_detail_original": true,
+      "chat_options": {
+        "explicit_tool_choice": "native"
+      }
+    },
+    "model_overrides": {}
+  },
+  "models": [
+    {
+      "slug": "local/deepseek-v4.1-flash",
+      "display_name": "local/deepseek-v4.1-flash",
+      "description": "DeepSeek V4.1 Flash via Local upstream",
+      "priority": 53,
+      "context_window": 200000,
+      "default_reasoning_level": "max",
+      "supported_reasoning_levels": ["low", "medium", "high", "xhigh", "max"],
+      "input_modalities": ["text", "image"],
+      "supports_image_detail_original": true,
+      "chat_options": {
+        "explicit_tool_choice": "native"
+      }
+    },
+    {
+      "slug": "local/glm-5.3-flash",
+      "display_name": "local/glm-5.3-flash",
+      "description": "GLM 5.3 Flash via Local upstream",
+      "priority": 52,
+      "context_window": 200000,
+      "default_reasoning_level": "max",
+      "supported_reasoning_levels": ["low", "medium", "high", "xhigh", "max"],
+      "input_modalities": ["text", "image"],
+      "supports_image_detail_original": true,
+      "chat_options": {
+        "explicit_tool_choice": "native"
+      }
+    },
+    {
+      "slug": "auto",
+      "display_name": "auto",
+      "description": "Automatic model routing via Local upstream",
+      "priority": 51,
+      "context_window": 200000,
+      "default_reasoning_level": "max",
+      "supported_reasoning_levels": ["low", "medium", "high", "xhigh", "max"],
+      "input_modalities": ["text", "image"],
+      "supports_image_detail_original": true,
+      "chat_options": {
+        "explicit_tool_choice": "native"
+      }
+    }
+  ]
+}

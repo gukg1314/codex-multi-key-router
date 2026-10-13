@@ -1,0 +1,1023 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Codex 路由</title>
+<link rel="icon" href="logo.png">
+<style>
+  :root{
+    --bg:#ffffff; --panel:#ffffff; --panel2:#ffffff; --panel3:#f0f0f1;
+    --border:#e5e5e5; --text:#0d0d0d; --muted:#5f5f6b; --muted2:#6e6e80;
+    --accent:#0d0d0d; --accent-dim:#b9b9c1; --ok:#0e7a52; --warn:#9a5b00; --err:#c0392b;
+    --chip:#f2f2f3;
+    --side-bg:#f9f9f9; --hover:#f7f7f8; --input-bg:#ffffff; --selected:#f4f4f5;
+    --control-border:#cfcfd6; --switch-bg:#d4d4d8; --knob:#ffffff;
+    --mask:rgba(0,0,0,.28); --shadow:rgba(0,0,0,.12); --knob-shadow:rgba(0,0,0,.18);
+    --spin-track:rgba(0,0,0,.18); --spin-head:#0d0d0d;
+    --tag-ok-bg:#e8f5ee; --tag-ok-fg:#0b6b47; --tag-err-bg:#fdeceb; --tag-err-fg:#b42318;
+    --tag-warn-bg:#fdf3e3; --tag-warn-fg:#8a4b00; --tag-blue-bg:#eaf1fe; --tag-blue-fg:#1d4ed8;
+    --ok-border:#c5e6d5; --err-border:#f3c8c4; --blue-border:#c9dbfb; --danger-border:#f3c8c4;
+  }
+  html[data-theme="dark"]{
+    --bg:#0f1115; --panel:#171a20; --panel2:#1d2027; --panel3:#22262e;
+    --border:#2a2e37; --text:#e8eaed; --muted:#9aa1ac; --muted2:#8b939f;
+    --accent:#4c8dff; --accent-dim:#2b4f92; --ok:#35c48e; --warn:#e5a34a; --err:#f1666a;
+    --chip:#242833;
+    --side-bg:#171a20; --hover:#1a1d24; --input-bg:#12151b; --selected:#1a2130;
+    --control-border:#3a4150; --switch-bg:#2b3140; --knob:#ffffff;
+    --mask:rgba(8,10,14,.66); --shadow:rgba(0,0,0,.35); --knob-shadow:rgba(0,0,0,.35);
+    --spin-track:rgba(255,255,255,.25); --spin-head:#ffffff;
+    --tag-ok-bg:#15291f; --tag-ok-fg:#8ee9c4; --tag-err-bg:#2b1a1c; --tag-err-fg:#f5959a;
+    --tag-warn-bg:#2e2415; --tag-warn-fg:#f0c48a; --tag-blue-bg:#16233c; --tag-blue-fg:#9cc2ff;
+    --ok-border:#245c46; --err-border:#5c2427; --blue-border:#24406e; --danger-border:#4a2a2d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg); color:var(--text); color-scheme:light;
+    font-family:-apple-system,"SF Pro Text","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:14.5px; -webkit-font-smoothing:antialiased; overflow:hidden;
+  }
+  html[data-theme="dark"] body{color-scheme:dark}
+  .app{display:flex;height:100vh}
+  .side{width:228px;min-width:228px;background:var(--side-bg);border-right:1px solid var(--border);display:flex;flex-direction:column}
+  .brand{display:flex;align-items:center;gap:10px;padding:22px 20px 18px}
+  .logo{width:30px;height:30px;border-radius:8px;display:block}
+  .brand b{font-size:15px;font-weight:600;letter-spacing:.2px}
+  .brand span{display:block;font-size:12px;color:var(--muted2);font-weight:400;margin-top:2px}
+  .nav{padding:8px 12px;display:flex;flex-direction:column;gap:2px}
+  .nav a{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;color:var(--muted);text-decoration:none;font-size:14px;cursor:pointer}
+  .nav a.on{background:var(--panel3);color:var(--text);font-weight:500}
+  .nav a .dot{width:6px;height:6px;border-radius:50%;background:var(--muted2)}
+  .nav a.on .dot{background:var(--accent)}
+  .side .foot{margin-top:auto;padding:16px 20px;border-top:1px solid var(--border);font-size:12.5px;color:var(--muted2);line-height:1.7;word-break:break-all}
+  .side .foot b{color:var(--ok);font-weight:500}
+  .side .foot b.off{color:var(--muted2)}
+  .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+  .top{height:56px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 26px;gap:16px}
+  .top h1{font-size:16px;font-weight:600;white-space:nowrap}
+  .top h1 small{font-weight:400;color:var(--muted2);margin-left:10px;font-size:13px}
+  .pill{display:inline-flex;align-items:center;gap:6px;background:var(--chip);border:1px solid var(--border);border-radius:999px;padding:5px 12px;font-size:12.5px;color:var(--muted);white-space:nowrap}
+  .pill.ok{color:var(--tag-ok-fg);border-color:var(--ok-border);background:var(--tag-ok-bg)}
+  .pill.err{color:var(--tag-err-fg);border-color:var(--err-border);background:var(--tag-err-bg)}
+  .body{padding:22px 26px 40px;overflow:auto;flex:1}
+  .grid{display:grid;gap:16px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px}
+  .card h2{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:.4px;margin-bottom:14px;text-transform:uppercase}
+  .stat{display:flex;gap:16px;flex-wrap:wrap}
+  .stat .card{flex:1;min-width:170px}
+  .stat .n{font-size:27px;font-weight:600;letter-spacing:-.5px}
+  .stat .k{font-size:12.5px;color:var(--muted2);margin-top:4px}
+  .btn{border:1px solid var(--border);background:var(--panel3);color:var(--text);border-radius:9px;padding:9px 16px;font-size:13.5px;font-family:inherit;cursor:pointer}
+  .btn:hover{border-color:var(--control-border)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500}
+  .btn.ghost{background:transparent;color:var(--muted)}
+  .btn.danger{background:transparent;color:var(--tag-err-fg);border-color:var(--danger-border)}
+  .btn.sm{padding:6px 12px}
+  table{width:100%;border-collapse:collapse}
+  th{font-size:12px;color:var(--muted2);font-weight:500;text-align:left;padding:0 12px 10px;letter-spacing:.3px}
+  td{padding:11px 12px;border-top:1px solid var(--border);font-size:13.5px;vertical-align:middle}
+  tbody tr:hover td{background:var(--hover)}
+  .tag{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--chip);color:var(--muted);font-size:12px;white-space:nowrap}
+  .tag.ok{background:var(--tag-ok-bg);color:var(--tag-ok-fg)}
+  .tag.err{background:var(--tag-err-bg);color:var(--tag-err-fg)}
+  .tag.warn{background:var(--tag-warn-bg);color:var(--tag-warn-fg)}
+  .tag.blue{background:var(--tag-blue-bg);color:var(--tag-blue-fg)}
+  .mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;color:var(--muted);word-break:break-all}
+  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .grow{flex:1}
+  .split{display:grid;grid-template-columns:290px 1fr;gap:16px;align-items:start}
+  .keylist{display:flex;flex-direction:column;gap:8px}
+  .keyitem{border:1px solid var(--border);background:var(--panel);border-radius:10px;padding:12px 14px;cursor:pointer}
+  .keyitem.on{border-color:var(--accent-dim);background:var(--selected)}
+  .keyitem .t{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:500;gap:8px}
+  .keyitem .s{font-size:12px;color:var(--muted2);margin-top:6px;display:flex;gap:10px;flex-wrap:wrap}
+  .check{width:15px;height:15px;border-radius:4px;border:1px solid var(--control-border);display:inline-block;position:relative;background:var(--input-bg);cursor:pointer;vertical-align:middle}
+  .check.on{background:var(--accent);border-color:var(--accent)}
+  .check.on:after{content:"";position:absolute;left:4.5px;top:1.5px;width:4px;height:8px;border:solid #fff;border-width:0 1.5px 1.5px 0;transform:rotate(45deg)}
+  .searchbox{background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:13px;width:240px;font-family:inherit}
+  .searchbox::placeholder{color:var(--muted2)}
+  .prio{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:6px;background:var(--chip);font-size:12.5px;color:var(--text);padding:0 6px}
+  .prio.top{background:var(--tag-blue-bg);color:var(--tag-blue-fg);border:1px solid var(--blue-border)}
+  .btns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .switch{width:34px;height:19px;border-radius:999px;background:var(--switch-bg);position:relative;display:inline-block;cursor:pointer;border:0;flex:none}
+  .switch:after{content:"";position:absolute;width:15px;height:15px;border-radius:50%;background:var(--knob);top:2px;left:2px;box-shadow:0 1px 2px var(--knob-shadow);transition:left .15s}
+  .switch.on{background:var(--accent)}
+  .switch.on:after{left:17px;opacity:1}
+  .switch:disabled{opacity:.5;cursor:not-allowed}
+  .seg{display:inline-flex;gap:2px;padding:2px;border:1px solid var(--border);border-radius:9px;background:var(--panel3)}
+  .seg button{border:0;background:transparent;color:var(--muted);font-family:inherit;font-size:13.5px;padding:6px 14px;border-radius:7px;cursor:pointer}
+  .seg button.on{background:var(--panel);color:var(--text);font-weight:500;box-shadow:0 1px 2px var(--shadow)}
+  .setting{display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-top:1px solid var(--border);gap:16px}
+  .setting:first-of-type{border-top:0;padding-top:0}
+  .setting .l{font-size:14px}
+  .setting .d{font-size:12.5px;color:var(--muted2);margin-top:4px;line-height:1.6}
+  .hint{font-size:12.5px;color:var(--muted2);line-height:1.8}
+  select{background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text);font-size:13px;font-family:inherit;max-width:230px}
+  input[type=text],input[type=password],input[type=number]{background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13.5px;font-family:inherit;width:100%}
+  input:focus,select:focus,.searchbox:focus{outline:none;border-color:var(--accent-dim)}
+  .modal{position:fixed;inset:0;background:var(--mask);display:none;align-items:center;justify-content:center;z-index:40}
+  .modal.on{display:flex}
+  .modal .box{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px;width:460px;max-width:92vw}
+  .modal h3{font-size:15px;margin-bottom:16px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12.5px;color:var(--muted2);margin-bottom:6px}
+  .toast{position:fixed;right:22px;bottom:22px;z-index:60;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+  .toast div{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:11px 15px;font-size:13.5px;max-width:420px;box-shadow:0 10px 30px var(--shadow)}
+  .toast div.err{border-color:var(--err-border);color:var(--tag-err-fg)}
+  .toast div.ok{border-color:var(--ok-border);color:var(--tag-ok-fg)}
+  .empty{padding:26px;text-align:center;color:var(--muted2);font-size:13.5px}
+  .scroll{max-height:340px;overflow:auto}
+  .body.overview-page{overflow:hidden;padding-bottom:22px}
+  .overview{height:100%;display:flex;flex-direction:column;gap:14px}
+  .overview-service{padding:16px 18px;flex:none}
+  .service-line{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .service-status{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .service-status strong{font-size:18px}
+  .overview-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+  .overview-stat{display:flex;align-items:baseline;gap:9px;padding:0 16px;border-left:1px solid var(--border)}
+  .overview-stat:first-child{padding-left:0;border-left:0}
+  .overview-stat .n{font-size:23px;font-weight:600}
+  .overview-stat .k{font-size:12px;color:var(--muted2)}
+  .overview-sources{display:flex;flex-direction:column;flex:1;min-height:160px;padding:0;overflow:hidden}
+  .sources-title{padding:16px 18px;border-bottom:1px solid var(--border)}
+  .sources-title h2{margin:0}
+  .sources-layout{display:grid;grid-template-columns:235px minmax(0,1fr);flex:1;min-height:0}
+  .source-list{max-height:none;padding:12px;display:flex;flex-direction:column;gap:8px;border-right:1px solid var(--border);background:var(--side-bg)}
+  .overview-source{width:100%;flex:none;border:1px solid transparent;background:transparent;color:var(--text);border-radius:9px;padding:12px;text-align:left;font-family:inherit;cursor:pointer}
+  .overview-source:hover{background:var(--hover)}
+  .overview-source.on{border-color:var(--accent-dim);background:var(--selected)}
+  .overview-source .name{font-size:13.5px;font-weight:500;overflow-wrap:anywhere}
+  .overview-source .meta{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--muted2)}
+  .source-models{display:flex;flex-direction:column;min-width:0;min-height:0;padding:16px 18px}
+  .source-heading{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:7px}
+  .source-heading h3{font-size:15px;font-weight:600}
+  .source-meta{display:flex;gap:6px 16px;flex-wrap:wrap;margin-bottom:14px;color:var(--muted2);font-size:12px;overflow-wrap:anywhere}
+  .overview-model-table{max-height:none;flex:1;min-height:0}
+  .overview-model-table table{table-layout:fixed}
+  .overview-model-table th{position:sticky;top:0;background:var(--panel);padding-top:8px;z-index:1}
+  .overview-model-table td:first-child{overflow-wrap:anywhere}
+  .recent-events{padding:12px 18px;flex:none}
+  .recent-events summary{color:var(--muted);font-size:12.5px;cursor:pointer}
+  .recent-events .scroll{max-height:110px;margin-top:12px}
+  .recent-events .mono{margin-bottom:6px}
+  @media(max-width:1100px){
+    .side{width:190px;min-width:190px}
+    .top h1 small{display:none}
+    .overview-stat{gap:6px;padding:0 10px;flex-wrap:wrap}
+    .sources-layout{grid-template-columns:210px minmax(0,1fr)}
+    .btns .btn{padding:8px 12px}
+  }
+  @media(max-height:700px),(max-width:900px){
+    .body.overview-page{overflow:auto}
+    .overview{height:auto;min-height:100%}
+    .overview-sources{height:420px;flex:none}
+  }
+  @media(max-width:760px){
+    .side{width:154px;min-width:154px}
+    .brand{padding:18px 12px}
+    .side .foot{padding:14px 12px}
+    .top{padding:0 16px;gap:8px}
+    .top .pill{padding:5px 8px;font-size:11px}
+    .body{padding:16px}
+    .overview-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .overview-stat:nth-child(3){padding-left:0;border-left:0}
+    .sources-layout{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+    .source-list{flex-direction:row;border-right:0;border-bottom:1px solid var(--border);max-height:108px}
+    .overview-source{width:185px}
+    .overview-sources{height:500px}
+    .source-models{padding:12px}
+    .split{grid-template-columns:minmax(0,1fr)}
+  }
+  .spin{display:inline-block;width:11px;height:11px;border:2px solid var(--spin-track);border-top-color:var(--spin-head);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-1px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <img class="logo" src="logo.png" alt="">
+      <div><b>Codex 路由</b><span id="brand-sub">版本读取中 · 本地服务</span></div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="foot" id="foot">加载中…</div>
+  </aside>
+  <div class="main">
+    <div class="top">
+      <h1 id="title"></h1>
+      <div id="top-pill" class="pill">● 读取中</div>
+    </div>
+    <div class="body" id="page"></div>
+  </div>
+</div>
+<div class="modal" id="modal"></div>
+<div class="toast" id="toast"></div>
+<script>
+const NAV=[['overview','概览'],['keys','Key 与模型'],['priority','路由优先级'],['settings','设置']];
+const TITLE={overview:['概览','一眼看清路由状态与接入的模型'],keys:['Key 与模型','每个 Key 单独决定拉取哪些模型'],priority:['路由优先级','同名模型按优先级决定走哪个 Key'],settings:['设置','自启动、接管开关与日志']};
+let PAGE=new URLSearchParams(location.search).get('page')||'overview';
+if(!TITLE[PAGE])PAGE='overview';
+let PAGE_HTML=null; // 上一次真正画进 #page 的内容，5 秒轮询靠它判断要不要重建
+let STATE=null;
+let SELECTED_KEY=undefined; // undefined 仅表示尚未初始化，null 表示主动选中官方账号。
+let DRAFT=null;
+let PENDING_PRIORITY=null;
+let SEARCH='';
+let COMPOSING=false;
+let BUSY=false;
+let IMAGE_OFF=new Set();
+let IMAGE_READY=false;
+let OVERVIEW_SOURCE='official';
+let RECENT_EVENTS_OPEN=false;
+let SAVING_DOCK_VISIBILITY=false;
+let DOCK_VISIBILITY_APPLIED=null;
+
+// 主题：默认浅色，设置存后端；localStorage 只做首屏防闪，后端返回后以其为准。
+const THEME_KEY='codexmk.theme';
+function applyTheme(theme){
+  const name=theme==='dark'?'dark':'light';
+  document.documentElement.setAttribute('data-theme',name);
+}
+function readThemeCache(){
+  try{return localStorage.getItem(THEME_KEY)==='dark'?'dark':'light';}catch(e){return 'light';}
+}
+function writeThemeCache(theme){
+  try{localStorage.setItem(THEME_KEY,theme==='dark'?'dark':'light');}catch(e){}
+}
+applyTheme(readThemeCache());
+
+function syncDockVisibility(){
+  if(!STATE||STATE.platform!=='macos')return;
+  const handler=window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.codexmkDockVisibility;
+  if(!handler)return;
+  const hidden=STATE.settings.hide_dock_icon!==false;
+  if(DOCK_VISIBILITY_APPLIED===hidden)return;
+  try{
+    handler.postMessage(hidden);
+    DOCK_VISIBILITY_APPLIED=hidden;
+    console.info('ui dock visibility synced hidden='+hidden);
+  }catch(e){console.warn('ui dock visibility sync failed',e);}
+}
+
+const ERROR_TEXT={
+  key_not_found:'这个 Key 不存在，可能已被删除',
+  key_missing:'这个 Key 还没填密钥',
+  task_running:'已有任务在执行，请稍候',
+  bad_order:'Key 顺序数据不完整，请刷新后重试',
+  bad_priority:'优先级数据格式不对',
+  invalid_keys:'Key 配置校验失败，请检查名称、密钥与上游地址',
+  port_busy:'8790 端口被其他程序占用，请先关闭该程序',
+  runtime_missing:'运行文件缺失，请先点“刷新模型列表”',
+  forbidden_origin:'请求来源被拒绝（安全限制）',
+  ui_missing:'界面文件缺失，请重新安装',
+  operation_failed:'操作失败',
+  internal_error:'内部错误',
+  bad_json:'请求数据格式不对',
+  bad_theme:'主题设置不正确',
+  bad_dock_visibility:'程序坞图标设置不正确',
+  macos_only:'此设置仅支持 macOS',
+};
+
+function esc(value){return String(value==null?'':value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function appVersionText(state){return state&&state.app_version?'v'+String(state.app_version):'版本未知';}
+function errText(data,fallback){
+  const code=data&&data.code;
+  if(code&&ERROR_TEXT[code])return ERROR_TEXT[code]+(data.error?'（'+data.error+'）':'');
+  return (data&&data.error)||fallback||'操作失败';
+}
+function toast(message,kind){
+  const box=document.getElementById('toast');
+  const item=document.createElement('div');
+  item.className=kind||'';
+  item.textContent=message;
+  box.appendChild(item);
+  setTimeout(()=>item.remove(),kind==='err'?9000:4200);
+}
+async function api(path,options){
+  const opts=Object.assign({headers:{}},options||{});
+  if(opts.body!==undefined){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(opts.body);}
+  let response;
+  try{
+    response=await fetch(path,opts);
+  }catch(e){
+    // WebKit reports refused/aborted connections as the bare English string
+    // "Load failed"; show something readable and keep the raw error in console.
+    console.warn('api request failed',path,e);
+    const error=new Error('本地服务连接中断，请稍后重试');
+    error.data=null;
+    throw error;
+  }
+  let data=null;
+  try{data=await response.json();}catch(e){data=null;}
+  if(!response.ok||(data&&data.ok===false)){
+    const message=errText(data,'HTTP '+response.status);
+    const error=new Error(message);
+    error.data=data;
+    throw error;
+  }
+  return data;
+}
+async function loadState(silent){
+  try{
+    STATE=await api('/api/state');
+  }catch(e){
+    if(!silent)toast('无法连接本地服务：'+e.message,'err');
+    return;
+  }
+  if(SELECTED_KEY===undefined||(SELECTED_KEY!==null&&!STATE.keys.some(k=>k.id===SELECTED_KEY))){
+    const reason=SELECTED_KEY===undefined?'initialize':'source-removed';
+    SELECTED_KEY=STATE.keys.length?STATE.keys[0].id:null;
+    DRAFT=null;
+    console.info('ui key selection reason='+reason+' source='+(SELECTED_KEY||'official'));
+  }
+  if(OVERVIEW_SOURCE!=='official'&&!STATE.keys.some(k=>k.id===OVERVIEW_SOURCE)){
+    OVERVIEW_SOURCE='official';
+    console.info('ui overview selection reason=source-removed source=official');
+  }
+  applyTheme(STATE.settings.theme);
+  writeThemeCache(STATE.settings.theme);
+  syncDockVisibility();
+  seedImageOverrides();
+  if(silent)renderQuiet();else render();
+}
+function seedImageOverrides(){
+  if(IMAGE_READY||!STATE)return;
+  STATE.models.forEach(m=>{if(!(m.input_modalities||['text','image']).includes('image'))IMAGE_OFF.add(m.upstream_model);});
+  IMAGE_READY=true;
+}
+function imageOff(upstreamModel){
+  return IMAGE_OFF.has(upstreamModel);
+}
+function nav(){
+  document.getElementById('nav').innerHTML=NAV.map(([k,t])=>`<a class="${k===PAGE?'on':''}" data-nav="${k}"><span class="dot"></span>${t}</a>`).join('');
+  const t=TITLE[PAGE];
+  document.getElementById('title').innerHTML=esc(t[0])+'<small>'+esc(t[1])+'</small>';
+}
+function foot(){
+  if(!STATE){document.getElementById('foot').textContent='加载中…';return;}
+  const running=STATE.router.running;
+  document.getElementById('brand-sub').textContent=appVersionText(STATE)+' · '+(STATE.platform==='windows'?'Windows':'macOS');
+  document.getElementById('foot').innerHTML=
+    '路由 <b class="'+(running?'':'off')+'">'+(running?'运行中':'已停止')+'</b><br>'+
+    '自启'+(STATE.settings.autostart?'已开启':'未开启');
+  const pill=document.getElementById('top-pill');
+  if(STATE.taken_over){pill.className='pill ok';pill.textContent='● 已接管 Codex 配置';}
+  else{pill.className='pill';pill.textContent='○ 官方直连（未接管）';}
+}
+function toastTask(){
+  const task=STATE&&STATE.task;
+  if(!task)return '';
+  if(task.status==='running')return `<span class="spin"></span> ${esc(taskKind(task.kind))}中…`;
+  if(task.status==='error')return `<span class="tag err">上次失败</span>`;
+  return '';
+}
+function taskKind(kind){
+  return {refresh:'刷新模型列表',enable:'启用路由',stop:'停止路由',direct:'切回官方直连',discover:'拉取 Key 模型',discover_official:'拉取官方模型'}[kind]||'处理';
+}
+async function submit(path,label){
+  if(BUSY)return;
+  BUSY=true;render();
+  try{
+    await api(path,{method:'POST',body:{}});
+    toast(label+'已开始','ok');
+    await pollTask();
+  }catch(e){toast(e.message,'err');}
+  BUSY=false;
+  await loadState(true);
+}
+async function pollTask(){
+  for(let i=0;i<600;i++){
+    await new Promise(r=>setTimeout(r,900));
+    try{STATE=await api('/api/state');}catch(e){continue;}
+    if(STATE.task&&STATE.task.status!=='running'){
+      if(STATE.task.status==='done'){
+        if(STATE.task.kind==='discover'){
+          const detail=STATE.task.detail||{};
+          // 拉取成功后丢掉旧的勾选缓存，用最新模型清单重建列表。
+          if(detail.key_id===SELECTED_KEY)DRAFT=null;
+          await loadState(true);
+          toast('拉取完成：发现 '+(detail.discovered==null?'?':detail.discovered)+' 个模型，已刷新列表','ok');
+        }else if(STATE.task.kind==='discover_official'){
+          const detail=STATE.task.detail||{};
+          await loadState(true);
+          toast('官方模型已拉取：'+(detail.discovered==null?'?':detail.discovered)+' 个模型'+(detail.restart_pending?'；请手动重启 Codex 使新模型生效':''),'ok');
+        }else{
+          toast(taskKind(STATE.task.kind)+'完成','ok');
+        }
+      }else toast(taskKind(STATE.task.kind)+'失败：'+(STATE.task.message||''),'err');
+      render();
+      return;
+    }
+    render();
+  }
+}
+/* ---------------------------------------------------------------- overview */
+function pageOverview(){
+  const s=STATE;
+  const key=s.keys.find(k=>k.id===OVERVIEW_SOURCE);
+  const official=!key;
+  const models=official?(s.official.models||[]):s.models.filter(m=>m.source===key.id);
+  const sourceList=`
+    <button class="overview-source ${official?'on':''}" data-action="select-overview-source" data-source="official">
+      <div class="name">ChatGPT 官方账号</div>
+      <div class="meta">${officialStatusHtml()}<span>${s.official.count} 个模型</span></div>
+    </button>
+    ${s.keys.map(k=>`<button class="overview-source ${OVERVIEW_SOURCE===k.id?'on':''}" data-action="select-overview-source" data-source="${esc(k.id)}">
+      <div class="name">${esc(k.name)}</div>
+      <div class="meta">${k.enabled?keyStatusHtml(k):'<span class="tag">已停用</span>'}<span>${k.included_count} 个模型</span></div>
+    </button>`).join('')}`;
+  const rows=models.map(m=>`<tr>
+    <td>${esc(m.slug)}</td>
+    <td><span class="tag ${official||m.wire_api==='responses'?'blue':''}">${official?'官方直连':wireLabel(m)}</span></td>
+  </tr>`).join('');
+  return `
+  <div class="overview">
+    <div class="card overview-service">
+      <div class="service-line">
+        <div class="service-status"><strong>路由服务</strong><span class="tag ${s.router.running?'ok':''}">● ${s.router.running?'运行中':'已停止'}</span>${toastTask()}</div>
+        <div class="btns">
+          <button class="btn primary" data-action="refresh" ${BUSY?'disabled':''}>刷新模型列表</button>
+          <button class="btn" data-action="start" ${BUSY?'disabled':''}>启用 / 接管 Codex</button>
+          <button class="btn" data-action="stop" ${BUSY?'disabled':''}>停止路由</button>
+          <button class="btn ghost" data-action="direct" ${BUSY?'disabled':''}>切回官方直连</button>
+        </div>
+      </div>
+      <div class="hint" style="margin-top:10px">官方模型走 ChatGPT 账号，Key 模型走各自上游。</div>
+      <div class="overview-stats">
+        <div class="overview-stat"><span class="n">${s.models.length}</span><span class="k">Key 已接入模型</span></div>
+        <div class="overview-stat"><span class="n">${s.keys.length}</span><span class="k">已配置 Key</span></div>
+        <div class="overview-stat"><span class="n">${s.official.count}</span><span class="k">官方模型</span></div>
+        <div class="overview-stat"><span class="n">${s.conflicts.length}</span><span class="k">同名模型冲突</span></div>
+      </div>
+    </div>
+    <div class="card overview-sources">
+      <div class="sources-title row"><h2>模型来源</h2><span class="grow"></span><span class="hint">选择来源，查看已接入的模型</span></div>
+      <div class="sources-layout">
+        <div class="source-list scroll" id="overview-source-list">${sourceList}</div>
+        <div class="source-models">
+          <div class="source-heading"><h3>${official?'ChatGPT 官方账号':esc(key.name)}</h3>${official?'<span class="tag blue">官方</span>':key.enabled?'':'<span class="tag">已停用</span>'}${official?officialStatusHtml():keyStatusHtml(key)}<span class="grow"></span><span class="hint">${models.length} 个模型</span></div>
+          <div class="source-meta">${official?'<span class="mono">chatgpt.com/backend-api/codex</span><span>最近探测：—</span>':`<span class="mono">${esc(shortUrl(key.upstream_base_url))}</span><span>最近探测：${esc(key.discovered_at||'—')}</span>`}</div>
+          <div class="scroll overview-model-table" id="overview-model-table">
+            <table>
+              <thead><tr><th>模型</th><th style="width:160px">接入方式</th></tr></thead>
+              <tbody>${rows||`<tr><td colspan="2" class="empty">${official?'还没有官方模型，前往“Key 与模型”拉取官方模型':'还没有模型进入 Codex 路由清单，先点“刷新模型列表”'}</td></tr>`}</tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <details class="card recent-events" id="recent-events" ${RECENT_EVENTS_OPEN?'open':''}>
+      <summary>最近事件</summary>
+      <div class="scroll" id="overview-events">${s.events.length?s.events.slice(0,6).map(e=>`<div class="mono">${esc(e.time)}　${esc(e.message)}</div>`).join(''):'<div class="hint">暂无事件</div>'}</div>
+    </details>
+  </div>`;
+}
+function wireLabel(model){
+  return model&&model.wire_api==='responses'?'原生直通':'Chat 桥接';
+}
+function officialStatusHtml(){
+  return STATE.official.logged_in?'<span class="tag ok">● 已登录</span>':'<span class="tag warn">未检测到登录</span>';
+}
+function keyStatusHtml(key){
+  return key.has_key?'<span class="tag ok">● 已配置</span>':'<span class="tag err">缺密钥</span>';
+}
+function shortUrl(url){
+  try{const u=new URL(url);return u.host+u.pathname;}catch(e){return url;}
+}
+/* -------------------------------------------------------------------- keys */
+function currentKey(){
+  return STATE.keys.find(k=>k.id===SELECTED_KEY)||null;
+}
+function draftSelected(){
+  const key=currentKey();
+  if(!key)return null;
+  const models=keyModels(key);
+  const stamp=models.join('\u0000');
+  if(DRAFT&&DRAFT.keyId===key.id&&DRAFT.stamp===stamp)return DRAFT;
+  const selected=key.selected_models===null?null:new Set(key.selected_models);
+  DRAFT={keyId:key.id,stamp,models,all:selected===null,set:selected===null?new Set(models):selected};
+  return DRAFT;
+}
+function keyModels(key){
+  const models=(key.discovered_models||[]).slice();
+  (key.selected_models||[]).forEach(m=>{if(!models.includes(m))models.push(m);});
+  return models;
+}
+function modelTableHtml(key){
+  const draft=draftSelected();
+  const term=SEARCH.trim().toLowerCase();
+  const rows=draft.models.filter(m=>!term||m.toLowerCase().includes(term)).map(model=>{
+    const on=draft.all||draft.set.has(model);
+    const entry=STATE.models.find(x=>x.source===key.id&&x.upstream_model===model);
+    const noImage=imageOff(model);
+    return `<tr>
+      <td style="width:44px"><span class="check ${on?'on':''}" data-action="toggle-model" data-model="${esc(model)}"></span></td>
+      <td>${esc(model)}</td>
+      <td style="width:118px"><span class="check ${noImage?'':'on'}" data-action="toggle-image" data-model="${esc(model)}" title="关闭后发给该模型的图片会替换成文字占位"></span> <span style="font-size:12px;color:var(--muted2)">图片输入</span></td>
+      <td>${entry?`<span class="tag ${entry.wire_api==='responses'?'blue':''}">${wireLabel(entry)}</span>`:'<span class="tag">待刷新</span>'}</td>
+      <td class="mono">${entry?'已接入 Codex':'未接入'}</td>
+    </tr>`;
+  }).join('');
+  return `<table>
+    <thead><tr><th style="width:44px"></th><th>模型</th><th style="width:118px">能力</th><th style="width:120px">接入方式</th><th style="width:140px">状态</th></tr></thead>
+    <tbody>${rows||'<tr><td colspan="5" class="empty">还没有模型清单，先点“测试连接 / 拉取模型”</td></tr>'}</tbody>
+  </table>`;
+}
+function modelHintHtml(){
+  const draft=draftSelected();
+  if(!draft)return '';
+  return `${draft.all?'当前为 <b style="color:var(--text)">全部拉取</b>：该 Key 以后新增的模型会自动包含。':'当前为 <b style="color:var(--text)">指定模型</b>：只拉取勾选的模型。'}
+        取消勾选的模型不会写入 Codex 模型列表。保存后点“概览 → 刷新模型列表”生效。<br>
+        “图片输入”默认开启；关掉后发给这个模型的图片会换成文字占位（部分模型不支持图片，关掉可以避免请求直接失败）。改完也要刷新模型列表才生效。<br>
+        官方模型由 ChatGPT 账号提供，不占用 Key，也不参与这里的勾选。`;
+}
+function renderModelTable(){
+  const box=document.getElementById('model-table');
+  const key=currentKey();
+  if(box)box.innerHTML=key?modelTableHtml(key):'';
+  const hint=document.getElementById('model-hint');
+  if(hint)hint.innerHTML=key?modelHintHtml():'';
+  // 局部重画后同步基准内容，轮询不会为这点变化再整页重建一次。
+  PAGE_HTML=pageHtml();
+}
+function pageKeys(){
+  const key=currentKey();
+  const list=`
+    <div class="keyitem ${!key?'on':''}" data-action="select-official">
+      <div class="t">ChatGPT 官方账号 <span class="tag blue">官方</span></div>
+      <div class="s"><span>账号登录态</span><span>${STATE.official.count} 个模型</span></div>
+    </div>
+    ${STATE.keys.map(k=>`
+      <div class="keyitem ${k.id===SELECTED_KEY?'on':''}" data-action="select-key" data-id="${esc(k.id)}">
+        <div class="t">${esc(k.name)} ${k.enabled?'<span class="tag ok">可用</span>':'<span class="tag">已停用</span>'}</div>
+        <div class="s"><span class="mono">${esc(k.masked_key)}</span><span>${k.included_count} 个模型</span></div>
+      </div>`).join('')}`;
+  if(!key){
+    return `<div class="split">
+      <div>
+        <div class="row" style="margin-bottom:12px"><b style="font-size:13.5px;color:var(--muted)">KEY 列表</b><span class="grow"></span><button class="btn sm" data-action="add-key">+ 添加</button></div>
+        <div class="keylist">${list}</div>
+      </div>
+      <div class="card">
+        <div class="row" style="margin-bottom:12px">
+          <h2 style="margin:0">官方模型（ChatGPT 账号）</h2>
+          <span class="grow"></span>
+          <button class="btn primary sm" data-action="discover-official" ${BUSY?'disabled':''}>拉取官方模型</button>
+        </div>
+        <div class="hint">使用本机 ChatGPT 账号拉取当前可用的最新 Codex 模型，不占用 Key，也不参与模型勾选。拉取后自动重启 Codex，使新模型生效。</div>
+        <div class="row" style="margin:14px 0">${officialStatusHtml()}<span class="hint">${STATE.official.count} 个官方模型</span>${toastTask()}</div>
+        <div class="scroll" id="official-model-table">
+          <table>
+            <thead><tr><th>模型</th><th style="width:140px">接入方式</th></tr></thead>
+            <tbody>${(STATE.official.models||[]).map(m=>`<tr><td>${esc(m.slug)}</td><td><span class="tag blue">官方直连</span></td></tr>`).join('')||'<tr><td colspan="2" class="empty">还没有官方模型，点击“拉取官方模型”</td></tr>'}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+  }
+  return `<div class="split">
+    <div>
+      <div class="row" style="margin-bottom:12px"><b style="font-size:13.5px;color:var(--muted)">KEY 列表</b><span class="grow"></span><button class="btn sm" data-action="add-key">+ 添加</button></div>
+      <div class="keylist">${list}</div>
+    </div>
+    <div class="card">
+      <div class="row" style="margin-bottom:6px">
+        <div>
+          <div style="font-size:16px;font-weight:600">${esc(key.name)}</div>
+          <div class="mono" style="margin-top:6px">${esc(key.upstream_base_url)}</div>
+          <div class="mono" style="margin-top:4px">密钥：${esc(key.masked_key)}</div>
+        </div>
+        <span class="grow"></span>
+        <button class="btn sm" data-action="test-key" ${BUSY?'disabled':''}>${BUSY?'<span class="spin"></span> ':'测试连接 / 拉取模型'}</button>
+        <button class="btn ghost sm" data-action="edit-key">编辑</button>
+        <button class="btn danger sm" data-action="delete-key">删除</button>
+      </div>
+      <div class="row" style="margin:14px 0 10px">
+        <input class="searchbox" id="model-search" placeholder="搜索模型…" value="${esc(SEARCH)}">
+        <span class="grow"></span>
+        <button class="btn sm" data-action="select-all">全选</button>
+        <button class="btn sm" data-action="clear-all">清空</button>
+        <button class="btn primary sm" data-action="save-models">保存勾选</button>
+      </div>
+      <div class="scroll" id="model-table">${modelTableHtml(key)}</div>
+      <div class="hint" style="margin-top:14px" id="model-hint">${modelHintHtml()}</div>
+    </div>
+  </div>`;
+}
+/* ---------------------------------------------------------------- priority */
+function priorityMap(){
+  if(PENDING_PRIORITY)return PENDING_PRIORITY;
+  const map=Object.assign({},STATE.model_priority||{});
+  PENDING_PRIORITY=map;
+  return map;
+}
+function priorityRows(){
+  const map=priorityMap();
+  const names={};
+  STATE.keys.forEach(k=>names[k.id]=k.name);
+  const known=new Set();
+  const rows=[];
+  STATE.models.forEach(model=>{
+    if(known.has(model.upstream_model))return;
+    known.add(model.upstream_model);
+    const candidates=STATE.conflicts.filter(c=>c.model===model.upstream_model).map(c=>c.candidates).flat();
+    rows.push({model:model.upstream_model,defaultSource:model.source,candidates:candidates.length?candidates:[model.source]});
+  });
+  STATE.conflicts.forEach(c=>{
+    if(known.has(c.model))return;
+    known.add(c.model);
+    rows.push({model:c.model,defaultSource:c.candidates[0],candidates:c.candidates});
+  });
+  return rows.map(row=>{
+    const chosen=map[row.model]||row.defaultSource;
+    const others=row.candidates.filter(id=>id!==chosen);
+    const options=[`<option value="" ${map[row.model]?'':'selected'}>默认（按 Key 顺序）</option>`];
+    if(row.candidates.includes('official')||chosen==='official'){
+      options.push(`<option value="official" ${map[row.model]==='official'?'selected':''}>ChatGPT 官方账号</option>`);
+    }
+    row.candidates.filter(id=>id!=='official').forEach(id=>{
+      options.push(`<option value="${esc(id)}" ${map[row.model]===id?'selected':''}>${esc(names[id]||id)}</option>`);
+    });
+    const officialNote=chosen==='official'?'<span class="tag blue">走官方账号</span>':'';
+    const override=row.candidates.includes('official')&&chosen!=='official'?'<span class="tag blue">Key 覆盖官方，可改回</span>':'';
+    return `<tr>
+      <td><b>${esc(row.model)}</b></td>
+      <td><select data-action="set-priority" data-model="${esc(row.model)}">${options.join('')}</select></td>
+      <td class="mono">${others.length?esc(others.map(id=>id==='official'?'ChatGPT 账号':(names[id]||id)).join('、')):'—'}</td>
+      <td>${officialNote}${override||(others.length?'<span class="hint">固定使用，不自动切换</span>':'<span class="hint">仅一个来源</span>')}</td>
+    </tr>`;
+  }).join('');
+}
+function pagePriority(){
+  return `
+  <div class="card" style="margin-bottom:16px">
+    <div class="row" style="margin-bottom:14px">
+      <h2 style="margin:0">同名模型用哪个来源</h2>
+      <span class="grow"></span>
+      <button class="btn primary sm" data-action="save-priority">保存优先级</button>
+    </div>
+    <div class="hint" style="margin-bottom:14px">每个模型在 Codex 里只出现一次。官方模型照样走 ChatGPT 账号；Key 里有同名模型时按这里的设置决定最终走哪边，固定不自动切换。留“默认”表示按 Key 列表顺序取第一个勾选了该模型的 Key。</div>
+    <div class="hint" style="margin-bottom:14px">切换来源会替换 Codex 列表里的同名条目（改回官方只会留下官方那一条），保存后点“概览 → 刷新模型列表”生效。</div>
+    <table>
+      <thead><tr><th style="width:22%">模型</th><th style="width:28%">生效来源</th><th>其它同名来源（不生效）</th><th>说明</th></tr></thead>
+      <tbody>${priorityRows()||'<tr><td colspan="4" class="empty">还没有任何 Key 模型，先到“Key 与模型”页拉取</td></tr>'}</tbody>
+    </table>
+  </div>
+  <div class="grid" style="grid-template-columns:1fr 1fr">
+    <div class="card">
+      <h2>默认顺序来源</h2>
+      <div class="hint" style="line-height:2.1">
+        <div class="row"><span class="grow">新模型默认顺序</span><span class="tag blue">按 Key 列表顺序</span></div>
+        <div class="row"><span class="grow">Key 列表里越靠上越优先</span><span class="mono">在 Key 页调整顺序</span></div>
+        <div class="row"><span class="grow">单个模型可单独指定走官方或某个 Key</span><span class="mono">上方下拉框覆盖</span></div>
+        <div class="row"><span class="grow">官方与 Key 同名时默认 Key 生效</span><span class="mono">老逻辑不变</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>生效规则</h2>
+      <div class="hint" style="line-height:2.1">
+        <div class="row"><span class="grow">同名模型只暴露一个给 Codex</span><span class="tag ok">已生效</span></div>
+        <div class="row"><span class="grow">固定走优先来源，失败不自动切换</span><span class="tag ok">已生效</span></div>
+        <div class="row"><span class="grow">探测失败的模型不参与路由</span><span class="tag ok">已生效</span></div>
+        <div class="row"><span class="grow">官方模型原样转发 ChatGPT 账号</span><span class="tag ok">已生效</span></div>
+      </div>
+    </div>
+  </div>`;
+}
+/* ---------------------------------------------------------------- settings */
+function pageSettings(){
+  const s=STATE;
+  return `
+  <div class="card" style="max-width:820px">
+    <h2>启动与接管</h2>
+    <div class="setting">
+      <div><div class="l">开机自动启动</div><div class="d">登录后在后台拉起本地服务；需要界面时双击软件图标即可</div></div>
+      <button class="switch ${s.settings.autostart?'on':''}" data-action="toggle-autostart"></button>
+    </div>
+    ${s.platform==='macos'?`<div class="setting">
+      <div><div class="l" id="hide-dock-label">隐藏程序坞图标</div><div class="d" id="hide-dock-description">开启后不显示 Dock 和 Cmd+Tab；关闭窗口或按 Cmd+Q 收起并继续后台运行，从状态栏“退出”才停止工具。手动启动显示窗口，登录自启静默运行。</div></div>
+      <button class="switch ${s.settings.hide_dock_icon!==false?'on':''}" data-action="toggle-hide-dock" role="switch" aria-checked="${s.settings.hide_dock_icon!==false}" aria-labelledby="hide-dock-label" aria-describedby="hide-dock-description" ${SAVING_DOCK_VISIBILITY?'disabled':''}></button>
+    </div>`:''}
+    <div class="setting">
+      <div><div class="l">接管 Codex 模型列表</div><div class="d">启用后 Codex 同时显示官方模型（走 ChatGPT 账号）和各 Key 拉取的模型</div></div>
+      ${s.taken_over?'<button class="switch on" data-action="direct"></button>':'<button class="switch" data-action="start"></button>'}
+    </div>
+    <div class="setting">
+      <div><div class="l">ChatGPT 官方模型</div><div class="d">官方模型走本机 ChatGPT 账号登录态，不占用任何 Key</div></div>
+      <span class="tag ${s.official.logged_in?'ok':'warn'}">${s.official.logged_in?'已登录':'未检测到登录'} · ${s.official.count} 个</span>
+    </div>
+    <div class="setting">
+      <div><div class="l">路由服务</div><div class="d">http://127.0.0.1:${s.router.port}${s.router.pid?' · PID '+s.router.pid:''}</div></div>
+      <span class="tag ${s.router.running?'ok':''}">${s.router.running?'运行中':'已停止'}</span>
+    </div>
+    <div class="setting">
+      <div><div class="l">管理界面端口</div><div class="d">默认 8791，修改后重启软件生效</div></div>
+      <div class="row" style="gap:8px">
+        <input type="number" id="admin-port" value="${s.settings.admin_port}" min="1024" max="65535" style="width:110px">
+        <button class="btn sm" data-action="save-port">保存</button>
+      </div>
+    </div>
+    <div class="setting">
+      <div><div class="l">界面主题</div><div class="d">默认浅色；深色适合夜间使用，两套主题字号一致</div></div>
+      <div class="seg">
+        <button class="${s.settings.theme==='dark'?'':'on'}" data-action="set-theme" data-theme="light">浅色</button>
+        <button class="${s.settings.theme==='dark'?'on':''}" data-action="set-theme" data-theme="dark">深色</button>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="max-width:820px;margin-top:16px">
+    <h2>日志与维护</h2>
+    <div class="setting">
+      <div><div class="l">打开日志目录</div><div class="d">toolctl.log · router.stderr.log · 按 5MB 自动轮转</div></div>
+      <button class="btn sm" data-action="open-logs">打开</button>
+    </div>
+    <div class="setting">
+      <div><div class="l">数据目录</div><div class="d mono">${esc(s.settings.runtime)}</div></div>
+    </div>
+    <div class="setting">
+      <div><div class="l">配置文件位置</div><div class="d mono">${esc(s.settings.keys_file)}</div></div>
+      <span class="tag">UTF-8 无 BOM</span>
+    </div>
+    <div class="setting">
+      <div><div class="l">开机自启动命令</div><div class="d mono">${esc(s.settings.autostart_command)}</div></div>
+      <span class="tag">${s.platform==='windows'?'注册表 Run 项':'LaunchAgent'}</span>
+    </div>
+    <div class="setting">
+      <div><div class="l">版本</div><div class="d">Codex 路由 ${esc(appVersionText(s))}（${s.platform==='windows'?'Windows x64':'macOS arm64'}）</div></div>
+      <span class="tag">本地运行，不上传数据</span>
+    </div>
+  </div>`;
+}
+function pageHtml(){
+  if(!STATE)return '<div class="empty">正在连接本地服务…</div>';
+  return {overview:pageOverview,keys:pageKeys,priority:pagePriority,settings:pageSettings}[PAGE]();
+}
+// #model-table 这类 .scroll 是独立滚动容器，整页重建会把它们打回顶部，重建前后原样搬一次。
+function captureInnerScroll(){
+  const map={};
+  document.querySelectorAll('#page .scroll').forEach(el=>{if(el.id&&(el.scrollTop||el.scrollLeft))map[el.id]={top:el.scrollTop,left:el.scrollLeft};});
+  return map;
+}
+function restoreInnerScroll(map){
+  Object.keys(map).forEach(id=>{const el=document.getElementById(id);if(el){el.scrollTop=map[id].top;el.scrollLeft=map[id].left;}});
+}
+function drawPage(html){
+  const page=document.getElementById('page');
+  const scroll=page.scrollTop;
+  const inner=captureInnerScroll();
+  page.classList.toggle('overview-page',PAGE==='overview');
+  page.innerHTML=html;
+  PAGE_HTML=html;
+  page.scrollTop=scroll;
+  restoreInnerScroll(inner);
+  const search=document.getElementById('model-search');
+  if(search){
+    // 只重画模型表格，输入框节点不动；中文输入法组合期间不重画，避免断字。
+    search.oninput=()=>{SEARCH=search.value;if(!COMPOSING)renderModelTable();};
+    search.addEventListener('compositionstart',()=>{COMPOSING=true;});
+    search.addEventListener('compositionend',()=>{COMPOSING=false;SEARCH=search.value;renderModelTable();});
+  }
+}
+function render(){
+  nav();foot();
+  drawPage(pageHtml());
+}
+function renderQuiet(){
+  const page=document.getElementById('page');
+  const active=document.activeElement;
+  const editing=active&&page.contains(active)&&(active.tagName==='INPUT'||active.tagName==='TEXTAREA');
+  const html=pageHtml();
+  nav();foot();
+  // 内容没变（或用户正在输入）就完全不碰 DOM：列表滚动位置、勾选草稿、搜索词都不会被打断。
+  if(editing||html===PAGE_HTML)return;
+  console.debug('ui quiet redraw page='+PAGE+' reason=content-changed');
+  drawPage(html);
+}
+/* --------------------------------------------------------- close dialog */
+// Windows 关闭窗口时由原生侧调用：复用现有弹框问一次，再决定最小化还是退出。
+// 原生侧 1.5 秒收不到回应就默认最小化，窗口不会因为页面卡住而关不掉。
+let CLOSE_PENDING=false;
+function answerCloseDialog(action){
+  if(action!=='shown')CLOSE_PENDING=false;
+  try{if(window.codexmkCloseChoice)window.codexmkCloseChoice(action);}catch(e){}
+}
+window.codexmkConfirmClose=function(){
+  const modal=document.getElementById('modal');
+  modal.className='modal on';
+  modal.innerHTML=`
+    <div class="box">
+      <h3>最小化到托盘，还是关闭工具？</h3>
+      <div class="hint">最小化：窗口收进右下角托盘，路由继续跑。<br>关闭工具：停止路由并关掉后台服务，再退出软件；Codex 仍留在本地路由，下次打开工具自动接回。</div>
+      <div class="row" style="justify-content:flex-end;margin-top:18px">
+        <button class="btn ghost" data-close-choice="minimize">最小化</button>
+        <button class="btn primary" data-close-choice="quit">关闭工具</button>
+      </div>
+    </div>`;
+  CLOSE_PENDING=true;
+  answerCloseDialog('shown');
+};
+/* ------------------------------------------------------------------ modal */
+function closeModal(){document.getElementById('modal').className='modal';document.getElementById('modal').innerHTML='';}
+function openKeyModal(key){
+  const modal=document.getElementById('modal');
+  modal.className='modal on';
+  modal.innerHTML=`
+    <div class="box">
+      <h3>${key?'编辑 Key':'添加 Key'}</h3>
+      <div class="field"><label>名称</label><input type="text" id="key-name" value="${esc(key?key.name:'')}" placeholder="例如：主力账号"></div>
+      <div class="field"><label>密钥（每行一个也可以，多个会合并成多条 Key）</label><input type="password" id="key-secret" placeholder="${key?'留空表示不修改':'sk-…'}"></div>
+      <div class="field"><label>上游地址</label><input type="text" id="key-upstream" value="${esc(key?key.upstream_base_url:'https://api.example.com/v1')}"></div>
+      <div class="row" style="justify-content:flex-end;margin-top:18px">
+        <button class="btn ghost" data-action="close-modal">取消</button>
+        <button class="btn primary" data-action="save-key" data-id="${key?esc(key.id):''}">保存</button>
+      </div>
+    </div>`;
+  const name=document.getElementById('key-name');
+  if(name)name.focus();
+}
+/* ------------------------------------------------------------------ events */
+document.addEventListener('click',async event=>{
+  const closeButton=event.target.closest('[data-close-choice]');
+  if(closeButton){const choice=closeButton.getAttribute('data-close-choice');closeModal();answerCloseDialog(choice);return;}
+  const navEl=event.target.closest('[data-nav]');
+  if(navEl){PAGE=navEl.getAttribute('data-nav');PENDING_PRIORITY=null;SEARCH='';history.replaceState(null,'','?page='+PAGE);render();return;}
+  const target=event.target.closest('[data-action]');
+  if(!target)return;
+  const action=target.getAttribute('data-action');
+  const key=currentKey();
+  if(action==='close-modal'){closeModal();return;}
+  if(action==='add-key'){openKeyModal(null);return;}
+  if(action==='edit-key'&&key){openKeyModal(key);return;}
+  if(action==='select-key'){SELECTED_KEY=target.getAttribute('data-id');DRAFT=null;SEARCH='';console.info('ui key selection reason=user source='+SELECTED_KEY);render();return;}
+  if(action==='select-official'){SELECTED_KEY=null;DRAFT=null;SEARCH='';console.info('ui key selection reason=user source=official');render();return;}
+  if(action==='select-overview-source'){
+    OVERVIEW_SOURCE=target.getAttribute('data-source');
+    const models=document.getElementById('overview-model-table');
+    if(models)models.scrollTop=0;
+    console.info('ui overview selection reason=user source='+OVERVIEW_SOURCE);
+    render();return;
+  }
+  if(action==='toggle-model'){
+    const draft=draftSelected();
+    const model=target.getAttribute('data-model');
+    if(draft.all){draft.set=new Set(draft.models);draft.all=false;}
+    if(draft.set.has(model))draft.set.delete(model);else draft.set.add(model);
+    renderModelTable();return;
+  }
+  if(action==='select-all'){const draft=draftSelected();draft.all=true;draft.set=new Set(draft.models);renderModelTable();return;}
+  if(action==='clear-all'){const draft=draftSelected();draft.all=false;draft.set=new Set();renderModelTable();return;}
+  if(action==='toggle-image'){
+    const model=target.getAttribute('data-model');
+    const enable=imageOff(model);
+    if(enable)IMAGE_OFF.delete(model);else IMAGE_OFF.add(model);
+    renderModelTable();
+    try{
+      await api('/api/models/overrides',{method:'PUT',body:{upstream_model:model,input_modalities:enable?['text','image']:['text']}});
+      toast(enable?'已开启图片输入，刷新模型列表后生效':'已关闭图片输入，模型不会再收到图片，刷新模型列表后生效','ok');
+    }catch(e){
+      if(enable)IMAGE_OFF.add(model);else IMAGE_OFF.delete(model);
+      renderModelTable();
+      toast(e.message,'err');
+    }
+    return;
+  }
+  if(action==='save-models'&&key){
+    const draft=draftSelected();
+    const payload=draft.all?null:Array.from(draft.set);
+    try{
+      await api('/api/keys/'+encodeURIComponent(key.id)+'/models',{method:'PUT',body:{selected_models:payload}});
+      toast('勾选已保存，点“概览 → 刷新模型列表”生效','ok');
+      DRAFT=null;await loadState(true);
+    }catch(e){toast(e.message,'err');}
+    return;
+  }
+  if(action==='save-key'){
+    const id=target.getAttribute('data-id');
+    const name=document.getElementById('key-name').value.trim();
+    const secret=document.getElementById('key-secret').value.trim();
+    const upstream=document.getElementById('key-upstream').value.trim();
+    if(!name){toast('请填写名称','err');return;}
+    if(!id&&!secret){toast('请粘贴密钥','err');return;}
+    try{
+      if(id){
+        await api('/api/keys/'+encodeURIComponent(id),{method:'PUT',body:{name:name,api_key:secret,upstream_base_url:upstream}});
+      }else{
+        const secrets=secret.split(/[\r\n]+/).map(s=>s.trim()).filter(Boolean);
+        for(let i=0;i<secrets.length;i++){
+          const label=secrets.length>1?(name+' '+(i+1)):name;
+          await api('/api/keys',{method:'POST',body:{name:label,api_key:secrets[i],upstream_base_url:upstream}});
+        }
+      }
+      closeModal();toast('已保存','ok');await loadState(true);
+    }catch(e){toast(e.message,'err');}
+    return;
+  }
+  if(action==='delete-key'&&key){
+    if(!confirm('确定删除 Key「'+key.name+'」？此操作不可撤销。'))return;
+    try{await api('/api/keys/'+encodeURIComponent(key.id),{method:'DELETE'});if(SELECTED_KEY===key.id){SELECTED_KEY=undefined;DRAFT=null;}toast('已删除','ok');await loadState(true);}
+    catch(e){toast(e.message,'err');}
+    return;
+  }
+  if(action==='test-key'&&key){await submit('/api/keys/'+encodeURIComponent(key.id)+'/test','拉取 Key 模型');return;}
+  if(action==='discover-official'){await submit('/api/official/models/discover','拉取官方模型');return;}
+  if(action==='refresh'){await submit('/api/refresh','刷新模型列表');return;}
+  if(action==='start'){await submit('/api/router/start','启用路由');return;}
+  if(action==='stop'){await submit('/api/router/stop','停止路由');return;}
+  if(action==='direct'){await submit('/api/router/direct','切回官方直连');return;}
+  if(action==='save-priority'){
+    try{
+      const map={};
+      Object.keys(priorityMap()).forEach(k=>{const v=priorityMap()[k];if(v)map[k]=v;});
+      await api('/api/priority',{method:'PUT',body:{model_priority:map}});
+      PENDING_PRIORITY=null;toast('优先级已保存，点“概览 → 刷新模型列表”生效','ok');await loadState(true);
+    }catch(e){toast(e.message,'err');}
+    return;
+  }
+  if(action==='toggle-autostart'){
+    try{
+      const data=await api('/api/settings',{method:'PUT',body:{autostart:!STATE.settings.autostart}});
+      STATE.settings=data.settings||STATE.settings;
+      toast(STATE.settings.autostart?'已开启开机自启动':'已关闭开机自启动','ok');
+      await loadState(true);
+    }catch(e){toast(e.message,'err');}
+    return;
+  }
+  if(action==='toggle-hide-dock'){
+    if(STATE.platform!=='macos'||SAVING_DOCK_VISIBILITY)return;
+    const hidden=STATE.settings.hide_dock_icon===false;
+    SAVING_DOCK_VISIBILITY=true;render();
+    try{
+      const data=await api('/api/settings',{method:'PUT',body:{hide_dock_icon:hidden}});
+      if(!data.settings||data.settings.hide_dock_icon!==hidden){
+        toast('后台服务版本过旧，程序坞设置没有保存，请重启工具后再试','err');
+        return;
+      }
+      STATE.settings=data.settings;
+      syncDockVisibility();
+      toast(hidden?'已隐藏程序坞图标':'已显示程序坞图标','ok');
+      console.info('ui hide dock icon saved value='+hidden);
+    }catch(e){console.warn('ui hide dock icon save failed',e);toast(e.message,'err');}
+    finally{SAVING_DOCK_VISIBILITY=false;render();}
+    return;
+  }
+  if(action==='save-port'){
+    const value=parseInt(document.getElementById('admin-port').value,10);
+    try{
+      await api('/api/settings',{method:'PUT',body:{admin_port:value}});
+      toast('端口已保存，重启软件后生效','ok');await loadState(true);
+    }catch(e){toast(e.message,'err');}
+    return;
+  }
+  if(action==='set-theme'){
+    const theme=target.getAttribute('data-theme')==='dark'?'dark':'light';
+    if(STATE.settings.theme===theme)return;
+    try{
+      const data=await api('/api/settings',{method:'PUT',body:{theme:theme}});
+      STATE.settings=data.settings||STATE.settings;
+      if(STATE.settings.theme!==theme){
+        // 旧后台服务会静默丢掉 theme；这里直接说明原因，别让按钮看着像坏了。
+        toast('后台服务版本过旧，主题没有保存，请重启工具后再试','err');
+        return;
+      }
+      applyTheme(STATE.settings.theme);
+      writeThemeCache(STATE.settings.theme);
+      toast(theme==='dark'?'已切换深色主题':'已切换浅色主题','ok');
+      render();
+    }catch(e){toast(e.message,'err');}
+    return;
+  }
+  if(action==='open-logs'){
+    try{await api('/api/system/open-logs',{method:'POST',body:{}});toast('已打开日志目录','ok');}
+    catch(e){toast(e.message,'err');}
+    return;
+  }
+});
+document.addEventListener('toggle',event=>{
+  if(event.target.id!=='recent-events')return;
+  RECENT_EVENTS_OPEN=event.target.open;
+  PAGE_HTML=pageHtml();
+},true);
+document.addEventListener('change',event=>{
+  const target=event.target.closest('[data-action="set-priority"]');
+  if(!target)return;
+  const map=priorityMap();
+  const model=target.getAttribute('data-model');
+  const value=target.value;
+  if(value)map[model]=value;else delete map[model];
+  PENDING_PRIORITY=map;
+  toast('已修改，记得点“保存优先级”','');
+});
+document.addEventListener('keydown',event=>{
+  if(event.key!=='Escape')return;
+  if(CLOSE_PENDING){closeModal();answerCloseDialog('minimize');return;}
+  closeModal();
+});
+nav();foot();
+loadState();
+setInterval(()=>{if(!BUSY&&(!STATE||STATE.task.status!=='running'))loadState(true);},5000);
+</script>
+</body>
+</html>

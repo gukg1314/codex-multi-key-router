@@ -1,0 +1,126 @@
+{
+  "first_turn": {
+    "model": "local/deepseek-v4.1-flash",
+    "stream": true,
+    "instructions": "Use the available client tools when needed, then finish the task.",
+    "input": [
+      {
+        "type": "additional_tools",
+        "role": "developer",
+        "tools": [
+          {
+            "type": "namespace",
+            "name": "functions",
+            "description": "Client-side tools exposed by Codex.",
+            "tools": [
+              {
+                "type": "custom",
+                "name": "exec",
+                "description": "Run JavaScript source through the local execution tool.",
+                "format": {
+                  "type": "text"
+                }
+              },
+              {
+                "type": "function",
+                "name": "view_image",
+                "description": "View a local image.",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "message",
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "Run pwd and report the resulting directory."
+          }
+        ]
+      }
+    ]
+  },
+  "second_turn": {
+    "model": "local/deepseek-v4.1-flash",
+    "stream": true,
+    "instructions": "Use the available client tools when needed, then finish the task.",
+    "input": [
+      {
+        "type": "additional_tools",
+        "role": "developer",
+        "tools": [
+          {
+            "type": "namespace",
+            "name": "functions",
+            "description": "Client-side tools exposed by Codex.",
+            "tools": [
+              {
+                "type": "custom",
+                "name": "exec",
+                "description": "Run JavaScript source through the local execution tool.",
+                "format": {
+                  "type": "text"
+                }
+              },
+              {
+                "type": "function",
+                "name": "view_image",
+                "description": "View a local image.",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "message",
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "Run pwd and report the resulting directory."
+          }
+        ]
+      },
+      {
+        "type": "custom_tool_call",
+        "id": "ctc_fixture",
+        "call_id": "call_fixture",
+        "name": "exec",
+        "input": "const r = await tools.exec_command({cmd: \"pwd\"}); text(r.output);",
+        "status": "completed"
+      },
+      {
+        "type": "custom_tool_call_output",
+        "id": "ctco_fixture",
+        "call_id": "call_fixture",
+        "output": "/Users/example/project\n"
+      }
+    ]
+  }
+}
