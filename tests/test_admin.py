@@ -363,17 +363,22 @@ class AdminServiceTests(unittest.TestCase):
         table = re.search(r"function renderModelTable\(\)\{(.*?)\n\}", script, re.S).group(1)
         self.assertIn("PAGE_HTML=pageHtml();", table)
 
-    def test_overview_uses_compact_source_and_model_layout(self):
+    def test_overview_uses_source_model_and_service_layout(self):
         html = (ROOT / "ui" / "index.html").read_text(encoding="utf-8")
         script = html.split("<script>", 1)[1].split("</script>", 1)[0]
+        overview = re.search(r"function pageOverview\(\)\{(.*?)\n\}", script, re.S).group(1)
+        source_list = re.search(r"function sourceListHtml\(overview\)\{(.*?)\n\}", script, re.S).group(1)
         self.assertIn(".overview-sources", html)
         self.assertIn(".sources-layout", html)
         self.assertIn(".source-list", html)
         self.assertIn(".overview-model-table", html)
-        self.assertIn('data-action="select-overview-source"', script)
+        self.assertIn(".overview-service", html)
+        self.assertIn(".actionbar", html)
+        self.assertIn('data-action="${action}"', source_list)
+        self.assertIn("overview?'select-overview-source'", source_list)
         self.assertIn("if(action==='select-overview-source')", script)
-        self.assertIn('<details class="card recent-events"', script)
-        self.assertIn(".recent-events .scroll{max-height:110px", html)
+        self.assertNotIn("recent-events", overview)
+        self.assertNotIn(".recent-events", html)
         self.assertIn("原生直通", script)
         self.assertIn("Chat 桥接", script)
         self.assertIn("官方直连", script)
@@ -388,7 +393,7 @@ class AdminServiceTests(unittest.TestCase):
         self.assertIn("html[data-theme=\"dark\"] body{color-scheme:dark}", html)
         for variable in ("--bg", "--panel", "--text", "--accent"):
             self.assertRegex(html, rf"(?s)html\[data-theme=\"dark\"\].*?{variable}:")
-        self.assertIn("background:var(--side-bg)", html)
+        self.assertIn(".overview-source.on,.keyitem.on{background:var(--accent)", html)
         self.assertIn("background:var(--selected)", html)
 
     def test_settings_update_writes_admin_port_and_rejects_bad_value(self):
@@ -796,11 +801,12 @@ class AdminHttpTests(unittest.TestCase):
         self.assertEqual([model["slug"] for model in self.service.state()["official"]["models"]], ["gpt-new"])
         self.assertEqual({model["slug"] for model in catalog["models"]}, {"gpt-new", "local/kimi-k3"})
 
-    def test_http_serves_the_ui_logo_for_the_sidebar_and_favicon(self):
+    def test_http_serves_the_ui_brand_and_favicon(self):
         with self.request("/") as response:
             html = response.read().decode("utf-8")
         self.assertIn('rel="icon" href="logo.png"', html)
-        self.assertIn('class="logo" src="logo.png"', html)
+        self.assertIn('class="brand"', html)
+        self.assertIn('<span class="wordmark">Codex</span><span>路由</span>', html)
         for path in ("/logo.png", "/favicon.ico"):
             with self.subTest(path=path), self.request(path) as response:
                 blob = response.read()

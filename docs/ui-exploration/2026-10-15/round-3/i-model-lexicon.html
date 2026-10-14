@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Codex 路由 · 模型字典</title>
+<style>
+@font-face{font-family:Instrument;src:url('fonts/InstrumentSerif-Regular.ttf') format('truetype');font-weight:400;font-display:block}
+:root{--paper:#f7f3ec;--ink:#29251f;--muted:#65594e;--red:#bd3022;--line:#cec3b6;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--paper);font:14px/1.5 var(--sans)}button{color:inherit;font:inherit;cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid var(--red);outline-offset:3px}button:disabled{cursor:default}::selection{background:var(--red);color:#fff}h1,h2,h3,p{margin:0}.app{width:1180px;height:820px;display:grid;grid-template-rows:108px 566px 82px 64px;background:var(--paper)}
+.masthead{display:flex;align-items:center;padding:0 32px;border-bottom:1px solid var(--ink);gap:30px}.brand{display:flex;align-items:baseline;gap:12px;white-space:nowrap;font-weight:500;font-size:24px}.wordmark{font:66px/1 Instrument,Georgia,serif;letter-spacing:-.025em;color:var(--red)}.identity{display:flex;flex-direction:column;gap:7px;font-size:12px;color:var(--muted);padding-top:8px}.state{display:flex;align-items:center;gap:7px;color:var(--ink)}.state:before{content:"";width:6px;height:6px;border-radius:50%;background:#396653}.counts{margin-left:auto;display:flex;gap:33px}.count strong{display:block;font-size:27px;font-weight:500;line-height:1.2;font-variant-numeric:tabular-nums}.count span{display:block;font-size:12px;color:var(--muted);margin-top:6px}
+.workspace{padding:24px 32px;display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:44px}.catalog{min-width:0}.catalog-heading{height:58px;display:flex;align-items:flex-start;justify-content:space-between;padding-top:3px}.catalog-heading h2{font-size:26px;line-height:1.25;font-weight:600}.catalog-heading h2 small{margin-left:12px;font-size:12px;font-weight:400;color:var(--muted)}.catalog-heading .total{color:var(--muted);font-size:12px;line-height:32px}.model-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--ink)}.model{height:60px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line)}.model-name{font:44px/1 Instrument,Georgia,serif;font-size-adjust:from-font;letter-spacing:-.012em;white-space:nowrap}.wire{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:9px;white-space:nowrap}.wire svg{width:18px;height:18px}.model.bridge .model-name{color:var(--red)}.model.bridge .wire{color:#9a392b}.catalog-note{height:39px;display:flex;align-items:center;gap:7px;color:var(--muted);font-size:12px}.catalog-note svg{width:13px;height:13px}
+.inspector h2{font-size:14px;font-weight:650;margin-bottom:10px}.sources{display:grid;gap:6px}.source{height:52px;border:0;border-bottom:1px solid var(--line);background:transparent;display:flex;align-items:center;justify-content:space-between;padding:0 10px;text-align:left}.source:hover{background:#ede5da}.source.active{background:var(--red);color:#fff;border-color:var(--red)}.source strong{font-size:15px;font-weight:600;display:block}.source small{display:block;font-size:12px;color:var(--muted);margin-top:2px}.source.active small{color:#fff1e6}.source .amount{font:30px/1 Instrument,Georgia,serif}.service{margin-top:23px}.service-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.service-heading h2{margin:0}.service-heading span{font-size:12px;color:var(--muted)}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.actions button{height:42px;border:1px solid var(--ink);background:transparent;font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 9px}.actions svg{width:15px;height:15px}.actions button:first-child{background:var(--ink);color:var(--paper)}.actions button:hover{background:#e8ded0}.actions button:first-child:hover{background:#493d30}.actions button:disabled{color:#9b8f81;border-color:#cfc5b8}.actions button:disabled:hover{background:transparent}.source-note{font-size:12px;color:var(--muted);line-height:1.7;margin-top:15px}.version-line{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px;margin-top:19px;color:var(--muted);font-size:12px}
+.activity{border-top:1px solid var(--ink);padding:18px 32px;display:grid;grid-template-columns:100px repeat(3,minmax(0,1fr));gap:27px;align-items:center}.activity h2{font-size:13px;font-weight:650}.event time{font-size:12px;font-variant-numeric:tabular-nums;color:var(--muted)}.event p{font-size:12px;margin-top:4px}.navigation-band{display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:var(--red);color:#fff}.navigation-band nav{display:flex;align-self:stretch;gap:36px}.navigation-band button{border:0;background:transparent;color:inherit;position:relative;padding:0 2px;font-weight:500;font-size:14px}.navigation-band button[aria-current="page"]{font-weight:700}.navigation-band button[aria-current="page"]:after{content:"";position:absolute;bottom:14px;height:2px;left:2px;right:2px;background:var(--paper)}.navigation-band button:hover{color:#ffe6d5}.navigation-band button:focus-visible{outline-color:#fff}.navigation-band p{font-size:12px;color:#fff1e6}.skip{position:absolute;left:-9999px}.skip:focus{left:20px;top:10px;background:var(--paper);padding:10px;z-index:2}
+@supports not (font-size-adjust:from-font){.model-name{font-size:44px;line-height:1.05}}
+</style>
+</head>
+<body>
+<a class="skip" href="#models">跳到模型目录</a>
+<div class="app">
+  <header class="masthead"><h1 class="brand"><span class="wordmark">Codex</span><span>路由</span></h1><div class="identity"><span class="state" id="running"></span><span id="takeover"></span></div><div class="counts" id="counts"></div></header>
+  <main class="workspace">
+    <section class="catalog" aria-labelledby="source-heading"><header class="catalog-heading"><h2 id="source-heading">主力 Key<small>已配置</small></h2><span class="total">7 个模型</span></header><ul class="model-list" id="models"></ul><p class="catalog-note"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 7h8v7H4zM5 7V4a3 3 0 0 1 6 0v3" stroke="currentColor" stroke-width="1.2"/></svg>固定来源，失败不自动切换</p></section>
+    <aside class="inspector" aria-label="来源与服务"><section><h2>模型来源</h2><div class="sources" id="sources"></div></section><section class="service"><header class="service-heading"><h2>路由服务</h2><span>本地服务</span></header><div class="actions" id="actions"></div><p class="source-note">模型目录刷新后生效。</p><div class="version-line"><span id="version"></span><span>概览</span></div></section></aside>
+  </main>
+  <section class="activity" aria-label="最近事件"><h2>最近事件</h2><div id="events" style="display:contents"></div></section>
+  <footer class="navigation-band"><nav id="nav" aria-label="主导航"></nav><p>选择来源查看模型</p></footer>
+</div>
+<script src="../data.js"></script>
+<script>
+const data=window.ROUTER_PREVIEW;
+const direct='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 12h18m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.5"/></svg>';
+const bridge='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 8h15l-4-4m7 12H6l4 4M18 8l-4 4M6 16l4-4" stroke="currentColor" stroke-width="1.5"/></svg>';
+document.getElementById('running').textContent=data.running;
+document.getElementById('takeover').textContent=data.takeover;
+document.getElementById('version').textContent='v'+data.version;
+document.getElementById('counts').innerHTML=data.counts.map(item=>`<div class="count"><strong>${item.value}</strong><span>${item.label}</span></div>`).join('');
+document.getElementById('models').innerHTML=data.models.map(model=>`<li class="model ${model.wire==='Chat 桥接'?'bridge':''}"><span class="model-name">${model.name}</span><span class="wire">${model.wire==='Chat 桥接'?bridge:direct}${model.wire}</span></li>`).join('');
+document.getElementById('sources').innerHTML=data.sources.map(source=>`<button type="button" class="source ${source.selected?'active':''}" aria-pressed="${!!source.selected}"><span><strong>${source.name}</strong><small>${source.state}</small></span><span class="amount" aria-label="${source.count} 个模型">${source.count}</span></button>`).join('');
+document.getElementById('actions').innerHTML=data.actions.map((name,index)=>`<button type="button" ${index===1?'disabled':''}>${index===0?'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 8a8 8 0 1 0 0 8M20 3v5h-5" stroke="currentColor" stroke-width="1.5"/></svg>':''}${name}</button>`).join('');
+document.getElementById('events').innerHTML=data.events.map(event=>`<div class="event"><time>${event.time}</time><p>${event.message}</p></div>`).join('');
+document.getElementById('nav').innerHTML=data.nav.map((name,index)=>`<button type="button" ${index===0?'aria-current="page"':''}>${name}</button>`).join('');
+console.info('ui-preview direction=I viewport=1180x820 source=shared-fictional-data backend=disconnected');
+</script>
+</body>
+</html>

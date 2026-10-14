@@ -196,18 +196,32 @@ async function main() {
   assert.match(overview, /class="source-list scroll"/);
   assert.match(overview, /class="[^"]*overview-model-table/);
   assert.match(overview, /gpt-5\.6-terra/);
-  assert.match(overview, /<details class="card recent-events"[^>]*>/);
-  assert.doesNotMatch(overview, /<details class="card recent-events"[^>]*\bopen\b/,
-    'recent events start collapsed');
+  assert.doesNotMatch(overview, /recent-events|最近事件/,
+    'the overview does not show a recent-events panel');
 
-  const toggle = listeners.toggle && listeners.toggle[0];
-  assert.ok(toggle, 'the recent events toggle listener is registered');
-  toggle({ target: { id: 'recent-events', open: true } });
-  responseQueue = [{ ...state, events: [{ time: '10:01', message: 'Changed synthetic event' }] }];
-  await vm.runInContext('loadState(true)', context);
+  const counts = document.getElementById('masthead-counts').innerHTML;
+  assert.match(counts, /<strong>2<\/strong><span>Key 模型<\/span>/);
+  assert.match(counts, /<strong>2<\/strong><span>已配置 Key<\/span>/);
+  assert.match(counts, /<strong>1<\/strong><span>官方模型<\/span>/);
+  assert.match(counts, /<strong>0<\/strong><span>同名模型<\/span>/);
+
+  const navigation = document.getElementById('nav').innerHTML;
+  for (const pageName of ['overview', 'keys', 'priority', 'settings']) {
+    assert.match(navigation, new RegExp(`id="nav-${pageName}"`));
+  }
+  assert.match(navigation, /id="nav-overview"[^>]*aria-current="page"/);
+
+  const serviceActions = ['action-refresh', 'action-start', 'action-stop', 'action-direct'];
+  assert.doesNotMatch(overview, /id="action-start" data-action="start" disabled/,
+    'a running router that has not taken over still allows enabling the route');
+  vm.runInContext('BUSY=true; render();', context);
   overview = document.getElementById('page').innerHTML;
-  assert.match(overview, /<details class="card recent-events"[^>]*\bopen\b/,
-    'an open event panel stays open when a state poll redraws the overview');
+  for (const actionId of serviceActions) {
+    assert.match(overview, new RegExp(`id="${actionId}"[^>]*\\bdisabled`),
+      `${actionId} is disabled while another operation is running`);
+  }
+  vm.runInContext('BUSY=false; render();', context);
+  overview = document.getElementById('page').innerHTML;
 
   await click('select-overview-source', { 'data-source': 'key-1' });
   overview = document.getElementById('page').innerHTML;
@@ -303,6 +317,8 @@ async function main() {
   document.getElementById('page').children = [];
 
   vm.runInContext("PAGE='settings'; render();", context);
+  const toggle = listeners.toggle && listeners.toggle[0];
+  assert.ok(toggle, 'the diagnostic details toggle listener is registered');
   toggle({ target: { id: 'diagnostics', open: true } });
   responseQueue = [{ ...state, router: { ...state.router, pid: 1234 } }];
   await vm.runInContext('loadState(true)', context);

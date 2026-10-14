@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-14T21:02:20.357352+00:00",
+  "title": "Design System: Codex 路由工具 · I「模型字典」",
+  "extensions": {
+    "breakpoints": [
+      {
+        "name": "compact-index",
+        "value": "980px",
+        "purpose": "右区230px、列距24px；品牌54px、数量24px；Key搜索独占一行。"
+      },
+      {
+        "name": "stacked-workspace",
+        "value": "800px",
+        "purpose": "页内两区纵排，横边距24px；品牌44px、数量21px；隐藏导航辅助文字。"
+      }
+    ],
+    "focus": [
+      {
+        "name": "control-focus",
+        "value": "3px solid var(--accent)",
+        "offset": "3px",
+        "purpose": "按钮、输入、下拉、summary和链接的可见键盘焦点。"
+      },
+      {
+        "name": "navigation-focus",
+        "value": "3px solid var(--accent-ink)",
+        "offset": "3px",
+        "purpose": "朱红导航上的对比焦点。"
+      }
+    ],
+    "motion": [
+      {
+        "name": "busy-spinner",
+        "value": "sp .7s linear infinite",
+        "purpose": "现有12px忙碌转圈，2px边线；@keyframes sp 旋转360deg。"
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation:none!important;transition:none!important",
+        "purpose": "prefers-reduced-motion:reduce 下停止动画和过渡。"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "主按钮",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "保存与主要操作；真实 disabled 阻止重复提交。",
+      "html": "<button class=\"ds-button-primary ds-control\">保存勾选</button>",
+      "css": ".ds-button-primary{min-height:var(--control-height);border:1px solid var(--text);border-radius:0;background:var(--text);color:var(--bg);font:var(--button-size) var(--sans);display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 12px;white-space:nowrap;cursor:pointer}.ds-button-primary:hover{background:var(--primary-hover)}.ds-button-primary:disabled{color:var(--disabled-text);border-color:var(--disabled-border);background:transparent;cursor:default}.ds-control:focus-visible{outline:3px solid var(--accent);outline-offset:3px}"
+    },
+    {
+      "name": "次按钮",
+      "kind": "button",
+      "description": "编辑、拉取与次级操作。",
+      "html": "<button class=\"ds-button-secondary ds-control\">拉取模型</button>",
+      "css": ".ds-button-secondary{min-height:var(--control-height);border:1px solid var(--text);border-radius:0;background:transparent;color:var(--text);font:var(--button-size) var(--sans);display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 12px;white-space:nowrap;cursor:pointer}.ds-button-secondary:hover{background:var(--hover)}.ds-button-secondary:disabled{color:var(--disabled-text);border-color:var(--disabled-border);background:transparent;cursor:default}.ds-control:focus-visible{outline:3px solid var(--accent);outline-offset:3px}"
+    },
+    {
+      "name": "模型搜索",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "使用系统 UI 字体的直角搜索框。",
+      "html": "<input class=\"ds-search ds-control\" type=\"search\" aria-label=\"搜索模型\" placeholder=\"搜索模型…\">",
+      "css": ".ds-search{min-height:var(--control-height);background:var(--input-bg);color:var(--text);border:1px solid var(--border);border-radius:0;padding:8px 10px;max-width:100%;font:var(--body-size)/1.5 var(--sans)}.ds-search[aria-invalid=\"true\"]{border-color:var(--err)}.ds-control:focus-visible{outline:3px solid var(--accent);outline-offset:3px}"
+    },
+    {
+      "name": "底部导航",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "朱红导航、纸色当前页下划线；标签始终保留。",
+      "html": "<nav class=\"ds-navigation\" aria-label=\"主导航\"><button aria-current=\"page\">概览</button><button>Key 与模型</button><button>路由优先级</button><button>设置</button></nav>",
+      "css": ".ds-navigation{display:flex;height:var(--nav-height);gap:var(--nav-gap);padding:0 var(--page-pad-x);background:var(--accent);color:var(--accent-ink)}.ds-navigation button{position:relative;border:0;background:transparent;color:inherit;padding:0 2px;font:500 14px var(--sans);white-space:nowrap;cursor:pointer}.ds-navigation button[aria-current=\"page\"]{font-weight:700}.ds-navigation button[aria-current=\"page\"]:after{content:\"\";position:absolute;bottom:14px;left:2px;right:2px;height:2px;background:var(--bg)}.ds-navigation button:hover{color:var(--accent-faint)}.ds-navigation button:focus-visible{outline:3px solid var(--accent-ink);outline-offset:3px}"
+    },
+    {
+      "name": "状态文字",
+      "kind": "chip",
+      "description": "轻量状态标签；已配置表示存在密钥。",
+      "html": "<span class=\"ds-status\">已配置</span>",
+      "css": ".ds-status{display:inline-block;font:var(--aux-size)/1.5 var(--sans);color:var(--ok)}"
+    },
+    {
+      "name": "来源索引",
+      "kind": "custom",
+      "refersTo": "source-active",
+      "description": "来源选择项以朱红底表示选中，右端显示模型数量。",
+      "html": "<button class=\"ds-source ds-control\" aria-pressed=\"true\"><span class=\"ds-source-copy\"><strong>主力 Key</strong><small>已配置</small></span><span class=\"ds-source-number\">7</span></button>",
+      "css": ".ds-source{width:100%;min-height:var(--source-row-height);border:0;border-bottom:1px solid var(--border);background:transparent;color:var(--text);display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 10px;text-align:left;cursor:pointer}.ds-source:hover{background:var(--selected)}.ds-source[aria-pressed=\"true\"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}.ds-source-copy{min-width:0;display:block}.ds-source-copy strong{display:block;font:600 var(--source-name-size) var(--sans);overflow-wrap:anywhere}.ds-source-copy small{display:block;font:var(--aux-size) var(--sans);color:var(--muted);margin-top:2px}.ds-source[aria-pressed=\"true\"] small{color:var(--accent-faint)}.ds-source-number{font:var(--source-number-size)/1 var(--serif);flex:none}.ds-control:focus-visible{outline:3px solid var(--accent);outline-offset:3px}"
+    },
+    {
+      "name": "直角开关",
+      "kind": "custom",
+      "description": "设置开关保留可访问状态；内方块随开启状态移到右边。",
+      "html": "<button class=\"ds-switch ds-control\" role=\"switch\" aria-checked=\"true\" aria-label=\"接管 Codex 模型列表\"></button>",
+      "css": ".ds-switch{width:44px;height:26px;flex:none;border:1px solid var(--muted);background:transparent;padding:3px;display:flex;align-items:center;justify-content:flex-start;cursor:pointer}.ds-switch:before{content:\"\";width:18px;height:18px;background:var(--muted)}.ds-switch[aria-checked=\"true\"]{background:var(--accent);border-color:var(--accent);justify-content:flex-end}.ds-switch[aria-checked=\"true\"]:before{background:var(--accent-ink)}.ds-switch:disabled{opacity:.5;cursor:default}.ds-control:focus-visible{outline:3px solid var(--accent);outline-offset:3px}"
+    },
+    {
+      "name": "弹窗内容框",
+      "kind": "card",
+      "description": "添加或编辑 Key 的实色直角内容框。",
+      "html": "<section class=\"ds-dialog-box\"><h3>添加 Key</h3><p>填写名称、密钥与上游地址。</p></section>",
+      "css": ".ds-dialog-box{background:var(--panel);color:var(--text);border:1px solid var(--text);width:500px;max-width:100%;max-height:100%;overflow:auto;padding:24px;font:var(--body-size)/1.5 var(--sans)}.ds-dialog-box h3{font-size:28px;font-weight:600;margin:0 0 18px}.ds-dialog-box p{margin:0}"
+    }
+  ],
+  "narrative": {
+    "northStar": "模型字典",
+    "overview": "模型名称是主要阅读对象。左边读模型，右边选来源和处理路由，顶部确认服务与接管状态；纸色画布、墨色细线和朱红导航保持清楚的阅读顺序。\n\n用户已选 I，并授权删除概览最近事件、补齐排版后施工。四页已实现，**代码回归与独立截图评审通过**；完整实际参数以 [正式 CSS](ui/index.html) 为准，详见 [UI施工参数-I.md](docs/UI施工参数-I.md)。施工参考为 [批准后的效果图](docs/ui-implementation-I/i-overview-approved.png) 和 [参考 HTML](docs/ui-exploration/2026-10-15/round-3/i-overview-approved.html)；[验收记录](docs/ui-implementation-I/README.md) 说明证据及未验证项。上一版 `docs/UI施工参数.md` 保留作历史资料。",
+    "keyCharacteristics": [
+      "66px 英文品牌与 44px 模型目录形成主要记忆点。",
+      "左工作区、右来源索引和底部朱红导航组织操作。",
+      "中文、表单与密集数据使用系统 UI 字体，真实状态与操作保持可读。"
+    ],
+    "dos": [
+      "**Do** 保持批准图的左模型右来源、108/648/64 三段和朱红导航。",
+      "**Do** 复用四页业务与主题机制，保留 macOS/Windows 原生窗口、菜单/托盘和平台字体差异。",
+      "**Do** 在核心功能、窄窗和深色最终验收后，由主流程统一记录结果与未验证项。"
+    ],
+    "donts": [
+      "**Don't** 新增余额、趋势、健康监控、自动轮换或会话功能；正文固定来源，失败不自动切换。",
+      "**Don't** 强行把表单和优先级全部放大为 44px，挤掉下拉、勾选和保存操作。",
+      "**Don't** 写入真实密钥、账号、私人链接或完整 Key 日志；不模拟另一平台窗口按钮。",
+      "**Don't** 把首版截图或静态设计样稿写成功能验收通过；本次不制作安装包。"
+    ]
+  }
+}
