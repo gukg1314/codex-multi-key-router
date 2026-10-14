@@ -14,11 +14,18 @@ class Element {
     this.scrollTop = 0;
     this.scrollLeft = 0;
     this.children = [];
+    this.attributes = {};
+    this.isConnected = true;
     this.classList = { toggle() {} };
   }
   appendChild(child) { this.children.push(child); }
   addEventListener() {}
-  contains() { return false; }
+  contains(child) { return this.children.includes(child); }
+  querySelectorAll() { return this.children; }
+  getAttribute(name) { return this.attributes[name] ?? null; }
+  setAttribute(name, value) { this.attributes[name] = value; }
+  removeAttribute(name) { delete this.attributes[name]; }
+  focus() { document.activeElement = this; }
   remove() {}
 }
 
@@ -66,7 +73,7 @@ const document = {
   documentElement: { setAttribute() {} },
   activeElement: null,
   getElementById(id) {
-    if (!elements.has(id)) elements.set(id, new Element());
+    if (!elements.has(id)) elements.set(id, Object.assign(new Element(), { id }));
     return elements.get(id);
   },
   addEventListener(type, listener) {
@@ -253,6 +260,101 @@ async function main() {
   await click('toggle-hide-dock');
   assert.equal(vm.runInContext('STATE.settings.hide_dock_icon', context), false,
     'the setting can still be saved when the UI runs without a native bridge');
+  fetchOverride = null;
+
+  vm.runInContext("STATE=__fixture; PAGE='keys'; SELECTED_KEY='key-1'; DRAFT=null; render();", context);
+  assert.match(document.getElementById('page').innerHTML, /type="checkbox"[^>]*data-action="toggle-model"/);
+  await click('toggle-model', { 'data-model': 'kimi-k3' });
+  await vm.runInContext('loadState(true)', context);
+  assert.equal(vm.runInContext("draftSelected().set.has('kimi-k3')", context), false,
+    'native checkbox edits survive the next state poll');
+  assert.equal(vm.runInContext('draftSelected().all', context), false);
+  vm.runInContext("SEARCH='no-such-model'; renderModelTable();", context);
+  assert.match(document.getElementById('model-table').innerHTML, /没有匹配的模型/);
+
+  vm.runInContext("PAGE='priority'; render();", context);
+  const select = Object.assign(new Element(), { tagName: 'SELECT', id: 'priority-kimi-k3', value: 'key-1' });
+  select.closest = () => select;
+  select.setAttribute('data-model', 'kimi-k3');
+  document.getElementById('page').children = [select];
+  select.focus();
+  listeners.change[0]({ target: select });
+  const priorityBeforePoll = document.getElementById('page').innerHTML;
+  responseQueue = [{ ...state, keys: [{ ...state.keys[0], name: 'Changed synthetic name' }, state.keys[1]] }];
+  await vm.runInContext('loadState(true)', context);
+  assert.equal(document.getElementById('page').innerHTML, priorityBeforePoll,
+    'polling cannot replace a focused source select');
+  assert.equal(vm.runInContext("PENDING_PRIORITY['kimi-k3']", context), 'key-1');
+  document.activeElement = null;
+  document.getElementById('page').children = [];
+
+  vm.runInContext("PAGE='settings'; render();", context);
+  toggle({ target: { id: 'diagnostics', open: true } });
+  responseQueue = [{ ...state, router: { ...state.router, pid: 1234 } }];
+  await vm.runInContext('loadState(true)', context);
+  assert.match(document.getElementById('page').innerHTML, /id="diagnostics"\s+open/,
+    'diagnostic details stay open when state changes');
+
+  const trigger = document.getElementById('action-add-key');
+  trigger.focus();
+  vm.runInContext('openKeyModal(null)', context);
+  assert.equal(document.activeElement.id, 'key-name');
+  assert.equal(document.getElementById('app').inert, true);
+  document.getElementById('key-name').value = '';
+  document.getElementById('key-secret').value = '';
+  document.getElementById('key-upstream').value = 'https://upstream.example/v1';
+  await click('save-key');
+  assert.equal(document.getElementById('key-name').getAttribute('aria-invalid'), 'true');
+  assert.equal(document.getElementById('key-error').textContent, '请填写名称');
+
+  const first = document.getElementById('key-name');
+  const last = new Element();
+  document.getElementById('modal').children = [first, last];
+  let tabPrevented = false;
+  last.focus();
+  listeners.keydown[0]({ key: 'Tab', preventDefault() { tabPrevented = true; } });
+  assert.equal(tabPrevented, true);
+  assert.equal(document.activeElement, first);
+  listeners.keydown[0]({ key: 'Tab', shiftKey: true, preventDefault() {} });
+  assert.equal(document.activeElement, last);
+  listeners.keydown[0]({ key: 'Escape', preventDefault() {} });
+  assert.equal(document.activeElement, trigger, 'dismissing a dialog returns focus to its trigger');
+  assert.equal(document.getElementById('app').inert, false);
+
+  const closeChoices = [];
+  context.window.codexmkCloseChoice = choice => closeChoices.push(choice);
+  context.window.codexmkConfirmClose();
+  assert.equal(document.activeElement.id, 'close-minimize');
+  listeners.keydown[0]({ key: 'Escape', preventDefault() {} });
+  context.window.codexmkConfirmClose();
+  await listeners.click[0]({ target: {
+    closest(selector) { return selector === '[data-close-choice]' ? this : null; },
+    getAttribute() { return 'quit'; },
+  } });
+  assert.deepEqual(closeChoices, ['shown', 'minimize', 'shown', 'quit'],
+    'the redesigned Windows dialog preserves the native close bridge');
+
+  // 旧请求完成后不能关掉用户后来打开的表单，也不能把错误写入新表单。
+  for (const ok of [true, false]) {
+    vm.runInContext('openKeyModal(null)', context);
+    document.getElementById('key-name').value = 'Synthetic new Key';
+    document.getElementById('key-secret').value = 'synthetic-secret';
+    const oldError = document.getElementById('key-error');
+    let finishSave;
+    fetchOverride = url => url === '/api/keys'
+      ? new Promise(resolve => { finishSave = resolve; })
+      : Promise.resolve({ ok: true, status: 200, json: async () => state });
+    const save = click('save-key');
+    vm.runInContext('closeModal()', context);
+    oldError.isConnected = false;
+    elements.set('key-error', new Element());
+    vm.runInContext('openKeyModal(null)', context);
+    finishSave({ ok, status: ok ? 200 : 500, json: async () => ({ ok }) });
+    await save;
+    assert.equal(document.getElementById('modal').className, 'modal on');
+    assert.equal(document.getElementById('key-error').textContent, '');
+    vm.runInContext('closeModal()', context);
+  }
   fetchOverride = null;
 
   process.stdout.write('UI behavior checks passed\n');
