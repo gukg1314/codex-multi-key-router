@@ -13,6 +13,9 @@ class Element {
     this.className = '';
     this.scrollTop = 0;
     this.scrollLeft = 0;
+    this.offsetWidth = 1000;
+    this.clientWidth = 1000;
+    this.style = { values: {}, setProperty(name, value) { this.values[name] = value; } };
     this.children = [];
     this.attributes = {};
     this.isConnected = true;
@@ -98,7 +101,7 @@ const context = vm.createContext({
   },
   setTimeout(callback) { callback(); return 1; },
   setInterval() { return 1; },
-  window: {},
+  window: { addEventListener() {} },
   confirm() { return true; },
 });
 context.__fixture = state;
@@ -123,6 +126,17 @@ async function main() {
 
   await vm.runInContext('loadState(false)', context);
   assert.equal(vm.runInContext('SELECTED_KEY', context), 'key-1');
+
+  const page = document.getElementById('page');
+  assert.equal(page.style.values['--scrollbar-width'], '0px');
+  page.clientWidth = 985;
+  vm.runInContext('syncContentGutter()', context);
+  assert.equal(page.style.values['--scrollbar-width'], '15px',
+    'classic scrollbar space is included in the common right margin');
+  page.clientWidth = 1000;
+  vm.runInContext('syncContentGutter()', context);
+  assert.equal(page.style.values['--scrollbar-width'], '0px',
+    'overlay scrollbars restore the full CSS right padding');
 
   await click('select-official');
   assert.equal(vm.runInContext('SELECTED_KEY', context), null,
