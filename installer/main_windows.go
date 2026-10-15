@@ -27,7 +27,7 @@ import (
 )
 
 const (
-	setupVersion   = "1.2.21"
+	setupVersion   = "1.2.26"
 	publisher      = "Codex Router"
 	launcherName   = "CodexMultiKey.exe"
 	uninstallName  = "uninstall.exe"

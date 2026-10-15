@@ -32,7 +32,7 @@ import (
 const (
 	// appVersion must match admin.py APP_VERSION: the launcher only reuses an
 	// admin service that reports this exact version.
-	appVersion   = "1.2.21"
+	appVersion   = "1.2.26"
 	defaultURL   = "http://127.0.0.1:8791"
 	windowTitle  = "Codex \u8def\u7531"
 	windowWidth  = 1180

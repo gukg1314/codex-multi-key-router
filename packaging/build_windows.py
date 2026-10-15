@@ -44,7 +44,7 @@ from packager import (
     utf8_bom_crlf,
 )
 
-SETUP_VERSION = "1.2.21"
+SETUP_VERSION = "1.2.26"
 LAUNCHER_EXE = "CodexMultiKey.exe"
 HELPER_EXE = "installctl.exe"
 SETUP_NAME = f"CodexRouter-Setup-{SETUP_VERSION}.exe"

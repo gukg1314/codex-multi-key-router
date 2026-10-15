@@ -40,7 +40,7 @@ import toolctl  # noqa: E402
 # APP_VERSION is the user visible release, and the desktop launcher compares it
 # before it reuses a running service (a stale service would serve an old API to
 # a new UI). Keep it in sync with launcher/main.go appVersion.
-APP_VERSION = "1.2.21"
+APP_VERSION = "1.2.26"
 VERSION = "6"
 ADMIN_HOST = "127.0.0.1"
 ADMIN_PORT = 8791

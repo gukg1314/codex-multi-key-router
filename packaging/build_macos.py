@@ -27,7 +27,7 @@ from pathlib import Path
 
 from packager import CACHE_DIR, DIST_DIR, PROJECT_ROOT, fetch, icon_assets, log_line
 
-APP_VERSION = "1.2.21"
+APP_VERSION = "1.2.26"
 APP_NAME = "Codex \u8def\u7531"
 APP_BUNDLE_NAME = APP_NAME + ".app"
 LAUNCHER_NAME = "CodexMultiKey"
