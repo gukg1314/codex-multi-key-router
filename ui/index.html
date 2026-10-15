@@ -137,11 +137,18 @@ html[data-ui-style="layered"] .overview-source{flex:1 0 180px;min-width:0;border
 html[data-ui-style="layered"] :is(.overview-source.on,.keyitem.on){background:var(--selected);border-color:var(--selected);color:#fff}
 html[data-ui-style="layered"] :is(.overview-source.on,.keyitem.on) .meta{color:#fff}
 html[data-ui-style="layered"] .source-number{font:500 22px/1 var(--sans);font-variant-numeric:tabular-nums}
-html[data-ui-style="layered"] .split{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) 148px;gap:18px}
-html[data-ui-style="layered"] .split>.sources-column{padding:13px 18px 15px;background:var(--panel);border-radius:18px;min-height:0}
+/* Key页把来源移到右侧，把完整高度留给模型列表。 */
+html[data-ui-style="layered"] .app[data-page="keys"]{grid-template-rows:96px minmax(0,1fr) 40px}
+html[data-ui-style="layered"] .app[data-page="keys"] .foot{bottom:14px}
+html[data-ui-style="layered"] .split{grid-template-columns:minmax(0,1fr) 220px;grid-template-rows:minmax(0,1fr);min-height:560px;gap:18px}
+html[data-ui-style="layered"] .split>.card{padding:20px}
+html[data-ui-style="layered"] .split .connection-info{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 16px;padding-bottom:10px;margin-bottom:10px}
+html[data-ui-style="layered"] .split .connection-info>.hint{grid-column:1/-1}
+html[data-ui-style="layered"] .split .model-toolbar .searchbox{flex-basis:auto}
+html[data-ui-style="layered"] .split>.sources-column{padding:18px 14px;background:var(--panel);border-radius:18px;min-height:0}
 html[data-ui-style="layered"] .split>.sources-column .panel-heading{min-height:20px;margin-bottom:10px}
-html[data-ui-style="layered"] .keylist{flex-direction:row;gap:10px}
-html[data-ui-style="layered"] .keyitem{flex:1 0 180px;min-height:66px}
+html[data-ui-style="layered"] .keylist{flex-direction:column;gap:10px}
+html[data-ui-style="layered"] .keyitem{flex:0 0 auto;min-height:66px}
 html[data-ui-style="layered"] .overview-service .btn{min-height:36px}
 html[data-ui-style="layered"] .source-index{background:#ffffff91;box-shadow:0 10px 24px #435b8208}
 html[data-ui-style="layered"][data-theme="dark"] .source-index{background:#202c40d9;border-color:var(--border)}
@@ -219,7 +226,11 @@ html[data-ui-style="index"] .app:before{content:"";position:absolute;top:75px;le
   html[data-ui-style="layered"]{--page-pad-x:20px;--column-gap:14px;--stats-gap:18px;--count-size:21px}
   html[data-ui-style="layered"] .masthead{padding-left:20px;padding-right:20px}
   html[data-ui-style="layered"] :is(.sources-layout,.split,.settings){gap:14px}
-  html[data-ui-style="layered"] .split{min-height:650px}
+  html[data-ui-style="layered"] .split{min-height:650px;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(480px,1fr) 104px}
+  html[data-ui-style="layered"] .split>.sources-column{display:grid;grid-template-columns:92px minmax(0,1fr);align-items:center;gap:12px;padding:12px}
+  html[data-ui-style="layered"] .split>.sources-column .panel-heading{margin-bottom:0}
+  html[data-ui-style="layered"] .keylist{flex-direction:row;height:100%}
+  html[data-ui-style="layered"] .keyitem{flex:1 0 180px}
   html[data-ui-style="layered"] .foot{left:108px}
   html[data-ui-style="layered"] :is(.sources-layout,.settings){grid-template-columns:minmax(0,1fr) 230px}
   html[data-ui-style="layered"] :is(.source-models,.overview-service,.split>.card,.settings .card){padding:18px}
@@ -245,9 +256,9 @@ html[data-ui-style="index"] .app:before{content:"";position:absolute;top:75px;le
   html[data-ui-style="layered"] .overview-service{grid-column:1;grid-row:2;min-height:260px}
   html[data-ui-style="layered"] .source-index{grid-column:1;grid-row:3;min-height:126px}
   html[data-ui-style="layered"] .source-list{max-height:160px}
-  html[data-ui-style="layered"] .split{grid-template-rows:auto 148px}
+  html[data-ui-style="layered"] .split{grid-template-rows:minmax(480px,1fr) 104px}
   html[data-ui-style="layered"] .split>.card{min-height:480px}
-  html[data-ui-style="layered"] .split>.sources-column{min-height:148px}
+  html[data-ui-style="layered"] .split>.sources-column{min-height:104px}
   html[data-ui-style="index"] .app{grid-template-rows:76px 118px minmax(0,1fr) 54px}
   html[data-ui-style="index"] .brand{left:24px;font-size:15px}
   html[data-ui-style="index"] .nav{left:185px;gap:18px;overflow-x:auto;overflow-y:hidden;padding:0 8px}
@@ -400,6 +411,7 @@ const ICONS={
 function icon(name){return `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ICONS[name]}</svg>`;}
 function iconTile(name){return `<span class="section-icon">${icon(name)}</span>`;}
 console.info('ui visual parameters revision=lexicon-I viewport=1180x820 header=108px navigation=64px overview-row=72px');
+console.info('默认主题Key页布局参数 revision=keys-room-v2 宽窗来源侧栏=220px 窄窗来源底栏=104px 页脚=40px');
 let PAGE=new URLSearchParams(location.search).get('page')||'overview';
 if(!TITLE[PAGE])PAGE='overview';
 let PAGE_HTML=null; // 上一次真正画进 #page 的内容，5 秒轮询靠它判断要不要重建

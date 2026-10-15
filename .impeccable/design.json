@@ -90,10 +90,13 @@
           "serviceWidth": "254px",
           "overviewFloatingHeight": "472px",
           "overviewDockHeight": "126px",
-          "keyDockHeight": "148px",
           "formControlHeight": "42px",
           "overviewControlHeight": "36px",
-          "appearanceSegmentHeight": "40px"
+          "appearanceSegmentHeight": "40px",
+          "keySourceWidth": "220px",
+          "keyFooterHeight": "40px",
+          "keyWorkspaceMinHeight": "560px",
+          "keyEditorPadding": "20px"
         },
         "breakpoints": {
           "980px": {
@@ -101,14 +104,15 @@
             "columnGap": "14px",
             "serviceWidth": "230px",
             "keyWorkspaceMinHeight": "650px",
-            "countSize": "21px"
+            "countSize": "21px",
+            "keyDockHeight": "104px"
           },
           "800px": {
             "flow": "模型、服务、来源dock纵排；dock内部横向滚动",
             "modelMinHeight": "460px",
             "serviceMinHeight": "260px",
             "keyEditorMinHeight": "480px",
-            "keyDockHeight": "148px"
+            "keyDockHeight": "104px"
           }
         },
         "depth": {
