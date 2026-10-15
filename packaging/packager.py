@@ -58,10 +58,10 @@ def log_line(message: str) -> None:
 
 
 def icon_assets() -> dict[str, Path]:
-    """Derive every shipped icon from icon.png.
+    """Derive shipped icons from the approved main and status bar PNG masters.
 
-    A missing source image (or a broken generator) degrades to the system
-    default icons; it must never stop a package from being built.
+    Invalid frozen masters stop packaging; other optional tooling failures
+    are logged before falling back to the system icons.
     """
     try:
         import icons

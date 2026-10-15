@@ -120,135 +120,90 @@ class PackagerTests(unittest.TestCase):
             count = int.from_bytes(data[4:6], "little")
             return [data[6 + index * 16] or 256 for index in range(count)]
 
-        self.assertEqual(ico_sizes(icons.APP_ICO), [16, 32, 48, 64, 128, 256])
+        self.assertEqual(ico_sizes(icons.APP_ICO), [16, 24, 32, 48, 64, 128, 256])
         self.assertEqual(ico_sizes(icons.TRAY_ICO), [16, 32, 48])
         logo = icons.read_png(icons.UI_LOGO)
         self.assertEqual((logo.width, logo.height), (icons.LOGO_PX, icons.LOGO_PX))
-        status = icons.read_png(icons.STATUS_PNG)
-        self.assertEqual((status.width, status.height), (icons.STATUS_PX, icons.STATUS_PX))
+        for path, size in ((icons.STATUS_PNG, 18), (icons.STATUS_PNG_2X, 36)):
+            status = icons.read_png(path)
+            self.assertEqual((status.width, status.height), (size, size))
         source = icons.read_png(icons.SOURCE_IMAGE)
-        self.assertEqual((source.width, source.height), (1254, 1254))
-        self.assertEqual(source.pixels[3], 0)
-        center = ((1254 // 2) * 1254 + 1254 // 2) * 4
-        self.assertEqual(source.pixels[center + 3], 255)
+        self.assertEqual((source.width, source.height), (1024, 1024))
+        self.assertIn(0, source.pixels[3::4])
+        self.assertIn(255, source.pixels[3::4])
 
-    def test_app_icon_uses_the_dock_source_and_keeps_the_plain_mark(self):
-        with tempfile.TemporaryDirectory() as tmp:
+    def test_frozen_main_icon_keeps_pixels_and_canvas_when_exported(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(icons, "log_line"):
             root = Path(tmp)
-            assets = root / "packaging" / "assets"
-            (root / "icon.png").write_bytes(b"plain mark")
-            dock = root / "icondock.png"
-            icons.write_png(dock, icons.Image(64, 64, b"\xff\xff\xff\xff" * (64 * 64)))
-            with mock.patch.object(icons, "PROJECT_ROOT", root), mock.patch.object(
-                icons, "ASSETS_DIR", assets
-            ), mock.patch.object(icons, "REPO_IMAGE", root / "icon.png"), mock.patch.object(
-                icons, "REPO_DOCK_IMAGE", dock
-            ), mock.patch.object(
-                icons, "SOURCE_IMAGE", assets / "app-icon.png"
-            ), mock.patch.object(
-                icons, "MARK_IMAGE", assets / "app-mark.png"
-            ):
-                app = icons.copy_source(force=True)
-                mark = icons.copy_mark_source(force=True)
-                self.assertEqual(mark.read_bytes(), b"plain mark")
-                plate = icons.read_png(app)
-                self.assertEqual(plate.pixels[3], 0)
-                self.assertEqual(plate.pixels[(32 * 64 + 32) * 4 + 3], 255)
-                # The punched plate must survive as the app icon; rebuilding it
-                # from the mark would drop the dock artwork's rounded outline.
-                packed = icons.app_icon_image(app, mark)
-                self.assertEqual(packed.width, icons.APP_ICON_CANVAS)
-
-    def test_app_icon_keeps_the_official_macos_plate_share(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            dock = root / "icondock.png"
-            icons.write_png(dock, icons.Image(1024, 1024, b"\xff\xff\xff\xff" * (1024 * 1024)))
-            plate = root / "app-icon.png"
-            icons.write_png(plate, icons.dock_plate(icons.read_png(dock)))
-            packed = icons.app_icon_image(plate)
-            box = icons.mark_box(packed)
-            self.assertIsNotNone(box)
-            left, top, right, bottom = box
-            expected = round(icons.APP_ICON_CANVAS * icons.MACOS_PLATE_RATIO)
-            self.assertLessEqual(abs(right - left - expected), 2)
-            self.assertLessEqual(abs(bottom - top - expected), 2)
-            # The 100 px margin Apple leaves on each side must stay transparent.
-            self.assertEqual(packed.pixels[(packed.width // 2) * 4 + 3], 0)
-            self.assertEqual(packed.pixels[3], 0)
-
-    def test_app_icon_rebuilds_an_opaque_square_instead_of_shipping_square_corners(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            mark = root / "icon.png"
-            icons.write_png(mark, icons.Image(64, 64, b"\x00\x00\x00\xff" * (64 * 64)))
             source = root / "app-icon.png"
-            icons.write_png(source, icons.Image(64, 64, b"\xff\xff\xff\xff" * (64 * 64)))
-            rebuilt = icons.app_icon_image(source, mark)
-            size = icons.APP_ICON_CANVAS
-            self.assertEqual((rebuilt.width, rebuilt.height), (size, size))
-            corner = 3
-            self.assertEqual(rebuilt.pixels[corner], 0)
-            center = ((size // 2) * size + size // 2) * 4
-            self.assertEqual(tuple(rebuilt.pixels[center : center + 4]), (0, 0, 0, 255))
+            pixels = bytearray(b"\x40\x80\xc0\xff" * (1024 * 1024))
+            pixels[:4] = b"\x1f\x59\xa7\x33"
+            pixels[-4:] = b"\x0b\x16\x21\x00"
+            icons.write_png(source, icons.Image(1024, 1024, pixels))
+            original = source.read_bytes()
+            image = icons.app_icon_image(source)
+            self.assertEqual(image.pixels, pixels)
+            plan = (("icon_32x32.png", 32), ("icon_512x512@2x.png", 1024))
+            with mock.patch.object(icons, "ICONSET_PLAN", plan):
+                paths = icons.write_iconset(icons.Resizer(image), root / "iconset", force=True, source=source)
+            small, full = (icons.read_png(path) for path in paths)
+            self.assertEqual((full.width, full.height), (1024, 1024))
+            self.assertEqual(full.pixels, pixels)
+            self.assertEqual((small.width, small.height), (32, 32))
+            self.assertGreater(small.pixels[3], 0)
+            center = (16 * 32 + 16) * 4
+            self.assertEqual(small.pixels[center : center + 4], b"\x40\x80\xc0\xff")
+            self.assertEqual(source.read_bytes(), original)
 
-    def test_app_icon_falls_back_to_the_rounded_plate_when_the_dock_image_is_missing(self):
-        with tempfile.TemporaryDirectory() as tmp:
+    def test_statusbar_exports_keep_the_two_approved_alpha_masks(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(icons, "log_line"):
             root = Path(tmp)
-            assets = root / "packaging" / "assets"
-            (root / "icon.png").write_bytes(b"plain mark")
-            (root / "icon\u5706\u89d2.png").write_bytes(b"white plate")
-            with mock.patch.object(icons, "PROJECT_ROOT", root), mock.patch.object(
-                icons, "ASSETS_DIR", assets
-            ), mock.patch.object(icons, "REPO_IMAGE", root / "icon.png"), mock.patch.object(
-                icons, "REPO_DOCK_IMAGE", root / "missing.png"
-            ), mock.patch.object(
-                icons, "REPO_ROUNDED_IMAGE", root / "icon\u5706\u89d2.png"
-            ), mock.patch.object(
-                icons, "SOURCE_IMAGE", assets / "app-icon.png"
+            source = root / "app-icon.png"
+            icons.write_png(source, icons.Image(1024, 1024, b"\x40\x80\xc0\xff" * (1024 * 1024)))
+            sources = (root / "statusbar-source.png", root / "statusbar-source@2x.png")
+            targets = (root / "statusbar.png", root / "statusbar@2x.png")
+            expected = []
+            for path, size in zip(sources, (18, 36)):
+                pixels = bytearray(b"\xff\xff\xff\x00" * (size * size))
+                alpha = bytes((index * 37 + size) % 256 for index in range(size * size))
+                pixels[3::4] = alpha
+                icons.write_png(path, icons.Image(size, size, pixels))
+                expected.append((path.read_bytes(), alpha))
+            with mock.patch.multiple(
+                icons,
+                SOURCE_IMAGE=source,
+                STATUS_SOURCE_PNG=sources[0],
+                STATUS_SOURCE_PNG_2X=sources[1],
+                STATUS_PNG=targets[0],
+                STATUS_PNG_2X=targets[1],
+                APP_ICO=root / "app.ico",
+                TRAY_ICO=root / "tray.ico",
+                UI_LOGO=root / "logo.png",
             ):
-                app = icons.copy_source(force=True)
-                self.assertEqual(app.read_bytes(), b"white plate")
+                icons.ensure_assets(force=True)
+            for source_path, target, (original, alpha) in zip(sources, targets, expected):
+                output = icons.read_png(target)
+                self.assertEqual(output.pixels[3::4], alpha)
+                for channel in range(3):
+                    self.assertFalse(any(output.pixels[channel::4]))
+                self.assertEqual(source_path.read_bytes(), original)
+            logo = icons.read_png(root / "logo.png")
+            self.assertEqual(logo.pixels[:4], b"\x40\x80\xc0\xff")
 
-    def test_app_icon_falls_back_to_the_plain_mark_when_the_plate_is_missing(self):
-        with tempfile.TemporaryDirectory() as tmp:
+    def test_icon_export_stops_for_missing_or_invalid_masters(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(icons, "log_line"):
             root = Path(tmp)
-            assets = root / "packaging" / "assets"
-            (root / "icon.png").write_bytes(b"plain mark")
-            with mock.patch.object(icons, "PROJECT_ROOT", root), mock.patch.object(
-                icons, "ASSETS_DIR", assets
-            ), mock.patch.object(icons, "REPO_IMAGE", root / "icon.png"), mock.patch.object(
-                icons, "REPO_DOCK_IMAGE", root / "missing-dock.png"
-            ), mock.patch.object(
-                icons, "REPO_ROUNDED_IMAGE", root / "missing.png"
-            ), mock.patch.object(
-                icons, "SOURCE_IMAGE", assets / "app-icon.png"
-            ):
-                app = icons.copy_source(force=True)
-                self.assertEqual(app.read_bytes(), b"plain mark")
-
-    def test_app_icon_lands_on_a_white_rounded_plate(self):
-        icon = icons.compose_app_icon(icons.read_png(icons.MARK_IMAGE))
-        self.assertEqual((icon.width, icon.height), (icons.APP_ICON_CANVAS, icons.APP_ICON_CANVAS))
-        size = icon.width
-
-        def pixel(x, y):
-            offset = (y * size + x) * 4
-            return tuple(icon.pixels[offset : offset + 4])
-
-        self.assertEqual(pixel(0, 0)[3], 0)
-        self.assertEqual(pixel(size - 1, 0)[3], 0)
-        top_middle = pixel(size // 2, 1)
-        self.assertEqual(top_middle[3], 255)
-        self.assertGreaterEqual(min(top_middle[:3]), 250)
-
-        def coloured(x, y):
-            red, green, blue, alpha = pixel(x, y)
-            return alpha > 0 and min(255 - red, 255 - green, 255 - blue) > 12
-
-        self.assertFalse(any(coloured(0, y) for y in range(0, size, 8)))
-        self.assertFalse(any(coloured(x, 0) for x in range(0, size, 8)))
-        self.assertFalse(any(coloured(size - 1, y) for y in range(0, size, 8)))
+            source = root / "app-icon.png"
+            with mock.patch.object(icons, "SOURCE_IMAGE", source):
+                with self.assertRaisesRegex(SystemExit, "图标母版缺失"):
+                    icons.ensure_assets(force=True)
+            icons.write_png(source, icons.Image(1, 1, b"\xff\xff\xff\xff"))
+            with self.assertRaisesRegex(SystemExit, "图标母版尺寸不符"):
+                icons.app_icon_image(source)
+            status = root / "statusbar-source.png"
+            icons.write_png(status, icons.Image(18, 18, b"\x80\x80\x80\xff" * (18 * 18)))
+            with self.assertRaisesRegex(SystemExit, "纯白线条"):
+                icons.statusbar_template(status, 18)
 
     def test_pe_subsystem_is_read_from_the_optional_header(self):
         header = bytearray(0x100)
@@ -375,7 +330,7 @@ class PackagerTests(unittest.TestCase):
     def test_windows_facing_sources_stay_pure_ascii(self):
         sources = sorted(packager.PROJECT_ROOT.glob("installer/*.go"))
         sources += sorted(packager.PROJECT_ROOT.glob("launcher/*.go"))
-        sources += sorted(packager.PROJECT_ROOT.glob("launcher/*.m"))
+        # macOS 专用 Objective-C 不参与 Windows 编译，使用 UTF-8。
         sources += sorted(packager.PROJECT_ROOT.glob("packaging/build_windows.py"))
         self.assertGreaterEqual(len(sources), 5)
         for path in sources:

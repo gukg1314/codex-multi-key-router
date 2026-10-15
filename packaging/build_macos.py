@@ -142,7 +142,7 @@ def install_bundle_icons(contents: Path, ui_target: Path, assets: dict[str, Path
     try:
         import icons
 
-        resizer = icons.Resizer(icons.app_icon_image(source, assets.get("mark")))
+        resizer = icons.Resizer(icons.app_icon_image(source))
         iconset = WORK_ROOT / "AppIcon.iconset"
         icons.write_iconset(resizer, iconset, source=source)
         icons.build_icns(iconset, resources / "AppIcon.icns")
