@@ -72,8 +72,12 @@ const elements = new Map();
 const listeners = {};
 let responseQueue = [];
 let fetchOverride = null;
+const localStorageValues = new Map([['codexmk.ui_style', 'index']]);
 const document = {
-  documentElement: { setAttribute() {} },
+  documentElement: {
+    attributes: {},
+    setAttribute(name, value) { this.attributes[name] = value; },
+  },
   activeElement: null,
   getElementById(id) {
     if (!elements.has(id)) elements.set(id, Object.assign(new Element(), { id }));
@@ -90,7 +94,10 @@ const context = vm.createContext({
   document,
   location: { search: '?page=keys' },
   history: { replaceState() {} },
-  localStorage: { getItem() { return null; }, setItem() {} },
+  localStorage: {
+    getItem(key) { return localStorageValues.get(key) ?? null; },
+    setItem(key, value) { localStorageValues.set(key, String(value)); },
+  },
   URL,
   URLSearchParams,
   console: { info() {}, debug() {}, warn() {} },
@@ -119,13 +126,35 @@ async function click(action, attrs = {}) {
   await handler({ target: clickTarget(action, attrs) });
 }
 
+async function navigate(page) {
+  const handler = listeners.click && listeners.click[0];
+  assert.ok(handler, 'document click handler is registered');
+  const target = {
+    closest(selector) { return selector === '[data-nav]' ? this : null; },
+    getAttribute(name) { return name === 'data-nav' ? page : null; },
+    focus() {},
+  };
+  await handler({ target });
+}
+
 async function main() {
   vm.runInContext(script, context);
+  assert.equal(document.documentElement.attributes['data-ui-style'], 'index',
+    'a valid cached UI style is applied before loading server state');
+  localStorageValues.set('codexmk.ui_style', 'unknown-style');
+  assert.equal(vm.runInContext('readStyleCache()', context), 'lexicon',
+    'an invalid cached UI style falls back to the model dictionary');
+  localStorageValues.set('codexmk.ui_style', 'index');
   assert.equal(vm.runInContext('SELECTED_KEY', context), undefined,
     'undefined means no source has been selected yet');
 
   await vm.runInContext('loadState(false)', context);
   assert.equal(vm.runInContext('SELECTED_KEY', context), 'key-1');
+  assert.equal(document.documentElement.attributes['data-ui-style'], 'lexicon',
+    'a legacy server state without ui_style uses the model dictionary default');
+  assert.equal(localStorageValues.get('codexmk.ui_style'), 'lexicon',
+    'the resolved legacy default is persisted to the style cache');
+  assert.equal(document.documentElement.attributes['data-theme'], 'light');
 
   const page = document.getElementById('page');
   assert.equal(page.style.values['--scrollbar-width'], '0px');
@@ -315,6 +344,171 @@ async function main() {
   assert.equal(vm.runInContext("PENDING_PRIORITY['kimi-k3']", context), 'key-1');
   document.activeElement = null;
   document.getElementById('page').children = [];
+
+  await navigate('settings');
+  const styleSettings = vm.runInContext('pageSettings()', context);
+  for (const style of ['layered', 'index', 'lexicon']) {
+    assert.match(styleSettings, new RegExp(`id="style-${style}"[^>]*data-action="set-ui-style"[^>]*data-ui-style="${style}"`));
+  }
+  assert.equal(document.documentElement.attributes['data-theme'], 'light',
+    'the visual style selector does not change the independent theme');
+
+  // A style save keeps drafts across the real keys/priority/settings navigation path.
+  vm.runInContext("PENDING_PRIORITY['kimi-k3']='key-2';", context);
+  assert.equal(vm.runInContext('SEARCH', context), 'no-such-model');
+  assert.equal(vm.runInContext("draftSelected().set.has('kimi-k3')", context), false);
+  const portDraft = Object.assign(new Element(), { id: 'admin-port', tagName: 'INPUT', value: '8799' });
+  document.getElementById('page').children = [portDraft];
+  portDraft.focus();
+  const pageBeforeStyleSave = document.getElementById('page').innerHTML;
+  const navBeforeStyleSave = document.getElementById('nav').innerHTML;
+  let finishStyleSave;
+  let styleSaveCount = 0;
+  const pendingStyleSave = new Promise(resolve => { finishStyleSave = resolve; });
+  fetchOverride = (url, options) => {
+    if (url === '/api/settings') {
+      assert.equal(options.method, 'PUT');
+      assert.deepEqual(JSON.parse(options.body), { ui_style: 'index' });
+      styleSaveCount += 1;
+      return pendingStyleSave;
+    }
+    const next = responseQueue.shift() || state;
+    return Promise.resolve({ ok: true, status: 200, json: async () => next });
+  };
+  const styleSave = click('set-ui-style', { 'data-ui-style': 'index' });
+  assert.equal(document.documentElement.attributes['data-ui-style'], 'index',
+    'selecting a style applies it before the settings request completes');
+  assert.equal(document.documentElement.attributes['data-theme'], 'light',
+    'changing UI style leaves the theme unchanged');
+  assert.equal(vm.runInContext('SAVING_UI_STYLE', context), true);
+  assert.equal(document.getElementById('page').innerHTML, pageBeforeStyleSave,
+    'style preview keeps the existing page DOM');
+  await click('set-ui-style', { 'data-ui-style': 'layered' });
+  assert.equal(styleSaveCount, 1, 'a style cannot be submitted again while its save is pending');
+
+  responseQueue = [{
+    ...state,
+    router: { ...state.router, pid: 1234 },
+    settings: { ...state.settings, ui_style: 'lexicon' },
+  }];
+  await vm.runInContext('loadState(true)', context);
+  assert.equal(document.documentElement.attributes['data-ui-style'], 'index',
+    'a poll with the previously saved style cannot override a pending preview');
+  assert.equal(vm.runInContext('STATE.router.pid', context), 1234,
+    'state polling still applies unrelated service updates during a style save');
+  assert.equal(document.getElementById('page').innerHTML, pageBeforeStyleSave,
+    'appearance syncing and polling do not rebuild the settings page');
+  assert.equal(document.getElementById('nav').innerHTML, navBeforeStyleSave);
+  assert.equal(document.activeElement, portDraft, 'the focused port field keeps focus during a style save and poll');
+  assert.equal(portDraft.value, '8799', 'the unsaved port draft survives a style save and poll');
+
+  finishStyleSave({
+    ok: true, status: 200,
+    json: async () => ({ ok: true, settings: { ui_style: 'index' } }),
+  });
+  await styleSave;
+  fetchOverride = null;
+  assert.equal(vm.runInContext('STATE.settings.ui_style', context), 'index');
+  assert.equal(vm.runInContext('STATE.settings.theme', context), 'light',
+    'saving a UI style does not replace unrelated setting fields');
+  assert.equal(localStorageValues.get('codexmk.ui_style'), 'index',
+    'a successful style save updates the local cache');
+  assert.equal(vm.runInContext('SAVING_UI_STYLE', context), false);
+
+  for (const action of ['toggle-autostart', 'toggle-hide-dock']) {
+    const savedStyle = vm.runInContext('STATE.settings.ui_style', context);
+    const nextStyle = savedStyle === 'index' ? 'layered' : 'index';
+    context.__savedStyle = savedStyle;
+    vm.runInContext("STATE.settings.ui_style=__savedStyle; STATE.settings.autostart=false; STATE.settings.hide_dock_icon=false; STATE.platform='macos'; PAGE='settings'; render();", context);
+    localStorageValues.set('codexmk.ui_style', savedStyle);
+
+    let releaseSettingSave;
+    let releaseStatePoll;
+    let announceStatePoll;
+    const pendingSettingSave = new Promise(resolve => { releaseSettingSave = resolve; });
+    const pendingStatePoll = new Promise(resolve => { releaseStatePoll = resolve; });
+    const statePollStarted = new Promise(resolve => { announceStatePoll = resolve; });
+    fetchOverride = (url, options) => {
+      if (url === '/api/settings' && JSON.parse(options.body).ui_style) {
+        const style = JSON.parse(options.body).ui_style;
+        return Promise.resolve({ ok: true, status: 200, json: async () => ({ ok: true, settings: { ui_style: style } }) });
+      }
+      if (url === '/api/settings') return pendingSettingSave;
+      if (url === '/api/state') {
+        announceStatePoll();
+        return pendingStatePoll;
+      }
+      assert.fail(`unexpected request: ${url}`);
+    };
+
+    const settingSave = click(action);
+    await click('set-ui-style', { 'data-ui-style': nextStyle });
+    assert.equal(document.documentElement.attributes['data-ui-style'], nextStyle);
+    assert.equal(localStorageValues.get('codexmk.ui_style'), nextStyle);
+
+    const staleSettings = {
+      ...state.settings,
+      ui_style: savedStyle,
+      autostart: true,
+      hide_dock_icon: true,
+    };
+    releaseSettingSave({ ok: true, status: 200, json: async () => ({ ok: true, settings: staleSettings }) });
+    if (action === 'toggle-autostart') await statePollStarted;
+    else await settingSave;
+
+    assert.equal(vm.runInContext('STATE.settings.ui_style', context), nextStyle,
+      `${action} response with an older style cannot replace the current setting`);
+    assert.equal(document.documentElement.attributes['data-ui-style'], nextStyle,
+      `${action} response with an older style cannot change the applied style`);
+    assert.equal(localStorageValues.get('codexmk.ui_style'), nextStyle,
+      `${action} response with an older style cannot replace the cached style`);
+
+    if (action === 'toggle-autostart') {
+      releaseStatePoll({
+        ok: true, status: 200,
+        json: async () => ({ ...state, platform: 'macos', settings: { ...staleSettings, ui_style: nextStyle } }),
+      });
+      await settingSave;
+    }
+    fetchOverride = null;
+  }
+
+  await navigate('keys');
+  assert.equal(vm.runInContext('SEARCH', context), 'no-such-model', 'the search draft survives style changes');
+  assert.equal(vm.runInContext("draftSelected().set.has('kimi-k3')", context), false,
+    'the selected-model draft survives style changes');
+  assert.equal(vm.runInContext("imageOff('kimi-k3')", context), true,
+    'the image-input draft survives style changes');
+  assert.equal(vm.runInContext("PENDING_PRIORITY['kimi-k3']", context), 'key-2',
+    'the route-priority draft survives style changes');
+
+  vm.runInContext("STATE=__fixture; STATE.settings.ui_style='index'; PAGE='settings'; render();", context);
+  fetchOverride = () => Promise.resolve({
+    ok: false, status: 500, json: async () => ({ ok: false, code: 'operation_failed' }),
+  });
+  await click('set-ui-style', { 'data-ui-style': 'layered' });
+  assert.equal(document.documentElement.attributes['data-ui-style'], 'index',
+    'a failed style save restores the previously saved style');
+  assert.equal(localStorageValues.get('codexmk.ui_style'), 'index',
+    'a failed style save does not change the cache');
+  assert.equal(vm.runInContext('SAVING_UI_STYLE', context), false);
+
+  fetchOverride = () => Promise.resolve({
+    ok: true, status: 200, json: async () => ({ ok: true, settings: { theme: 'light' } }),
+  });
+  await click('set-ui-style', { 'data-ui-style': 'layered' });
+  assert.equal(document.documentElement.attributes['data-ui-style'], 'index',
+    'an older service response without ui_style restores the saved style');
+  assert.equal(localStorageValues.get('codexmk.ui_style'), 'index');
+  assert.equal(vm.runInContext('SAVING_UI_STYLE', context), false);
+
+  fetchOverride = null;
+  responseQueue = [{ ...state, settings: { ...state.settings, ui_style: 'future-style' } }];
+  await vm.runInContext('loadState(true)', context);
+  assert.equal(document.documentElement.attributes['data-ui-style'], 'lexicon',
+    'an invalid server style uses the default style');
+  assert.equal(localStorageValues.get('codexmk.ui_style'), 'lexicon',
+    'an invalid server style is normalized in the local cache');
 
   vm.runInContext("PAGE='settings'; render();", context);
   const toggle = listeners.toggle && listeners.toggle[0];

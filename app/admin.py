@@ -44,6 +44,7 @@ APP_VERSION = "1.2.21"
 VERSION = "6"
 ADMIN_HOST = "127.0.0.1"
 ADMIN_PORT = 8791
+UI_STYLES = ("layered", "index", "lexicon")
 ROUTER_PORT = 8790
 MAX_BODY = 1024 * 1024
 KEY_PATH = re.compile(r"^/api/keys/([A-Za-z0-9_-]{1,32})(?:/(discover|test|models))?$")
@@ -712,6 +713,7 @@ class AdminService:
         return {
             "admin_port": int(raw.get("admin_port") or ADMIN_PORT),
             "theme": raw.get("theme") if raw.get("theme") in ("light", "dark") else "light",
+            "ui_style": raw.get("ui_style") if raw.get("ui_style") in UI_STYLES else "lexicon",
             "hide_dock_icon": not toolctl.is_windows() and raw.get("hide_dock_icon") is not False,
             "router_port": ROUTER_PORT,
             "router_enabled": self.router_expected(),
@@ -1064,6 +1066,9 @@ class AdminService:
         return model
 
     def update_settings(self, body: dict) -> dict:
+        if "ui_style" in body and body["ui_style"] not in UI_STYLES:
+            log.warning("界面风格保存被拒绝：风格值不在允许范围内")
+            raise ApiError("ui_style must be layered, index or lexicon", 400, "bad_ui_style")
         if "hide_dock_icon" in body:
             if toolctl.is_windows():
                 raise ApiError("hide_dock_icon is only available on macOS", 400, "macos_only")
@@ -1097,6 +1102,11 @@ class AdminService:
             self._write_settings_raw(raw)
             log.info("theme saved theme=%s", theme)
             self.add_event("theme saved theme=%s" % theme)
+        if "ui_style" in body:
+            raw = self._settings_raw()
+            raw["ui_style"] = body["ui_style"]
+            self._write_settings_raw(raw)
+            self.add_event("界面风格已保存 style=%s" % body["ui_style"])
         if "hide_dock_icon" in body:
             raw = self._settings_raw()
             raw["hide_dock_icon"] = body["hide_dock_icon"]

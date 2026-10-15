@@ -420,6 +420,39 @@ class AdminServiceTests(unittest.TestCase):
             self.service.update_settings({"theme": "blue"})
         self.assertEqual(ctx.exception.code, "bad_theme")
 
+    def test_settings_ui_style_defaults_to_lexicon_and_persists_with_each_theme(self):
+        self.assertEqual(self.service.settings_view()["ui_style"], "lexicon")
+        self.p["settings"].write_text(json.dumps({"previous_model": "gpt-5.1", "ui_style": "old"}), encoding="utf-8")
+        self.assertEqual(self.service.settings_view()["ui_style"], "lexicon")
+        with mock.patch.object(self.service.router, "ensure_running") as start, mock.patch.object(
+            self.service.router, "stop"
+        ) as stop, mock.patch.object(toolctl, "_restart_chatgpt") as restart:
+            for style in ("layered", "index", "lexicon"):
+                for theme in ("light", "dark"):
+                    with self.subTest(style=style, theme=theme):
+                        self.service.update_settings({"theme": theme})
+                        result = self.service.update_settings({"ui_style": style})
+                        self.assertEqual(result["settings"]["ui_style"], style)
+                        self.assertEqual(result["settings"]["theme"], theme)
+                        stored = json.loads(self.p["settings"].read_text(encoding="utf-8"))
+                        self.assertEqual(stored["ui_style"], style)
+                        self.assertEqual(stored["previous_model"], "gpt-5.1")
+                        reopened = admin.AdminService(self.package, self.p, home=self.home)
+                        self.assertEqual(reopened.settings_view()["ui_style"], style)
+            start.assert_not_called()
+            stop.assert_not_called()
+            restart.assert_not_called()
+
+    def test_settings_ui_style_rejects_invalid_values_before_other_changes(self):
+        with mock.patch.object(self.service.autostart, "enable") as enable:
+            for value in ("blue", "", None, True, {}, []):
+                with self.subTest(value=value), self.assertRaises(admin.ApiError) as ctx:
+                    self.service.update_settings({"autostart": True, "theme": "dark", "ui_style": value})
+                self.assertEqual(ctx.exception.code, "bad_ui_style")
+                self.assertEqual(ctx.exception.status, 400)
+            enable.assert_not_called()
+        self.assertFalse(self.p["settings"].exists())
+
     def test_settings_hide_dock_icon_defaults_on_and_persists(self):
         with mock.patch.object(toolctl, "is_windows", return_value=False):
             self.assertTrue(self.service.settings_view()["hide_dock_icon"])

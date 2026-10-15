@@ -1,0 +1,1274 @@
+[
+  {
+    "style": "layered",
+    "section": "overview",
+    "size": "desktop",
+    "rects": {
+      ".brand": {
+        "x": 114,
+        "y": 32.5,
+        "width": 63.671875,
+        "height": 18,
+        "scrollHeight": 18,
+        "clientHeight": 18
+      },
+      ".nav": {
+        "x": 10,
+        "y": 106,
+        "width": 67,
+        "height": 318,
+        "scrollHeight": 318,
+        "clientHeight": 318
+      },
+      ".masthead": {
+        "x": 88,
+        "y": 0,
+        "width": 1092,
+        "height": 96,
+        "scrollHeight": 96,
+        "clientHeight": 96
+      },
+      ".sources-layout": {
+        "x": 114,
+        "y": 114,
+        "width": 1040,
+        "height": 616,
+        "scrollHeight": 616,
+        "clientHeight": 616
+      },
+      ".source-models": {
+        "x": 114,
+        "y": 114,
+        "width": 768,
+        "height": 472,
+        "scrollHeight": 470,
+        "clientHeight": 470
+      },
+      ".overview-service": {
+        "x": 900,
+        "y": 114,
+        "width": 254,
+        "height": 472,
+        "scrollHeight": 470,
+        "clientHeight": 470
+      },
+      ".source-index": {
+        "x": 114,
+        "y": 604,
+        "width": 1040,
+        "height": 126,
+        "scrollHeight": 124,
+        "clientHeight": 124
+      },
+      ".split": null,
+      ".split>.card": null,
+      ".split>.sources-column": null,
+      "#model-table": null
+    }
+  },
+  {
+    "style": "layered",
+    "section": "keys",
+    "size": "desktop",
+    "rects": {
+      ".brand": {
+        "x": 114,
+        "y": 32.5,
+        "width": 144.140625,
+        "height": 18,
+        "scrollHeight": 18,
+        "clientHeight": 18
+      },
+      ".nav": {
+        "x": 10,
+        "y": 106,
+        "width": 67,
+        "height": 318,
+        "scrollHeight": 318,
+        "clientHeight": 318
+      },
+      ".masthead": {
+        "x": 88,
+        "y": 0,
+        "width": 1092,
+        "height": 96,
+        "scrollHeight": 96,
+        "clientHeight": 96
+      },
+      ".sources-layout": null,
+      ".source-models": null,
+      ".overview-service": null,
+      ".source-index": null,
+      ".split": {
+        "x": 114,
+        "y": 114,
+        "width": 1040,
+        "height": 616,
+        "scrollHeight": 616,
+        "clientHeight": 616
+      },
+      ".split>.card": {
+        "x": 114,
+        "y": 114,
+        "width": 1040,
+        "height": 450,
+        "scrollHeight": 448,
+        "clientHeight": 448
+      },
+      ".split>.sources-column": {
+        "x": 114,
+        "y": 582,
+        "width": 1040,
+        "height": 148,
+        "scrollHeight": 148,
+        "clientHeight": 148
+      },
+      "#model-table": {
+        "x": 139,
+        "y": 343.578125,
+        "width": 990,
+        "height": 142.640625,
+        "scrollHeight": 394,
+        "clientHeight": 143
+      }
+    }
+  },
+  {
+    "style": "layered",
+    "section": "priority",
+    "size": "desktop",
+    "rects": {
+      ".brand": {
+        "x": 114,
+        "y": 32.5,
+        "width": 147.5,
+        "height": 18,
+        "scrollHeight": 18,
+        "clientHeight": 18
+      },
+      ".nav": {
+        "x": 10,
+        "y": 106,
+        "width": 67,
+        "height": 318,
+        "scrollHeight": 318,
+        "clientHeight": 318
+      },
+      ".masthead": {
+        "x": 88,
+        "y": 0,
+        "width": 1092,
+        "height": 96,
+        "scrollHeight": 96,
+        "clientHeight": 96
+      },
+      ".sources-layout": null,
+      ".source-models": null,
+      ".overview-service": null,
+      ".source-index": null,
+      ".split": null,
+      ".split>.card": null,
+      ".split>.sources-column": null,
+      "#model-table": null
+    }
+  },
+  {
+    "style": "layered",
+    "section": "settings",
+    "size": "desktop",
+    "rects": {
+      ".brand": {
+        "x": 114,
+        "y": 32.5,
+        "width": 63.671875,
+        "height": 18,
+        "scrollHeight": 18,
+        "clientHeight": 18
+      },
+      ".nav": {
+        "x": 10,
+        "y": 106,
+        "width": 67,
+        "height": 318,
+        "scrollHeight": 318,
+        "clientHeight": 318
+      },
+      ".masthead": {
+        "x": 88,
+        "y": 0,
+        "width": 1092,
+        "height": 96,
+        "scrollHeight": 96,
+        "clientHeight": 96
+      },
+      ".sources-layout": null,
+      ".source-models": null,
+      ".overview-service": null,
+      ".source-index": null,
+      ".split": null,
+      ".split>.card": null,
+      ".split>.sources-column": null,
+      "#model-table": null
+    }
+  },
+  {
+    "style": "layered",
+    "section": "overview",
+    "size": "narrow",
+    "rects": {
+      ".brand": {
+        "x": 108,
+        "y": 32.5,
+        "width": 63.671875,
+        "height": 18,
+        "scrollHeight": 18,
+        "clientHeight": 18
+      },
+      ".nav": {
+        "x": 10,
+        "y": 106,
+        "width": 67,
+        "height": 318,
+        "scrollHeight": 318,
+        "clientHeight": 318
+      },
+      ".masthead": {
+        "x": 88,
+        "y": 0,
+        "width": 812,
+        "height": 96,
+        "scrollHeight": 96,
+        "clientHeight": 96
+      },
+      ".sources-layout": {
+        "x": 108,
+        "y": 114,
+        "width": 772,
+        "height": 496,
+        "scrollHeight": 496,
+        "clientHeight": 496
+      },
+      ".source-models": {
+        "x": 108,
+        "y": 114,
+        "width": 528,
+        "height": 356,
+        "scrollHeight": 354,
+        "clientHeight": 354
+      },
+      ".overview-service": {
+        "x": 650,
+        "y": 114,
+        "width": 230,
+        "height": 356,
+        "scrollHeight": 354,
+        "clientHeight": 354
+      },
+      ".source-index": {
+        "x": 108,
+        "y": 484,
+        "width": 772,
+        "height": 126,
+        "scrollHeight": 124,
+        "clientHeight": 124
+      },
+      ".split": null,
+      ".split>.card": null,
+      ".split>.sources-column": null,
+      "#model-table": null
+    }
+  },
+  {
+    "style": "layered",
+    "section": "keys",
+    "size": "narrow",
+    "rects": {
+      ".brand": {
+        "x": 108,
+        "y": 32.5,
+        "width": 144.140625,
+        "height": 18,
+        "scrollHeight": 18,
+        "clientHeight": 18
+      },
+      ".nav": {
+        "x": 10,
+        "y": 106,
+        "width": 67,
+        "height": 318,
+        "scrollHeight": 318,
+        "clientHeight": 318
+      },
+      ".masthead": {
+        "x": 88,
+        "y": 0,
+        "width": 812,
+        "height": 96,
+        "scrollHeight": 96,
+        "clientHeight": 96
+      },
+      ".sources-layout": null,
+      ".source-models": null,
+      ".overview-service": null,
+      ".source-index": null,
+      ".split": {
+        "x": 108,
+        "y": 114,
+        "width": 772,
+        "height": 650,
+        "scrollHeight": 650,
+        "clientHeight": 650
+      },
+      ".split>.card": {
+        "x": 108,
+        "y": 114,
+        "width": 772,
+        "height": 488,
+        "scrollHeight": 486,
+        "clientHeight": 486
+      },
+      ".split>.sources-column": {
+        "x": 108,
+        "y": 616,
+        "width": 772,
+        "height": 148,
+        "scrollHeight": 148,
+        "clientHeight": 148
+      },
+      "#model-table": {
+        "x": 127,
+        "y": 387.578125,
+        "width": 734,
+        "height": 142.640625,
+        "scrollHeight": 394,
+        "clientHeight": 143
+      }
+    }
+  },
+  {
+    "style": "layered",
+    "section": "priority",
+    "size": "narrow",
+    "rects": {
+      ".brand": {
+        "x": 108,
+        "y": 32.5,
+        "width": 147.5,
+        "height": 18,
+        "scrollHeight": 18,
+        "clientHeight": 18
+      },
+      ".nav": {
+        "x": 10,
+        "y": 106,
+        "width": 67,
+        "height": 318,
+        "scrollHeight": 318,
+        "clientHeight": 318
+      },
+      ".masthead": {
+        "x": 88,
+        "y": 0,
+        "width": 812,
+        "height": 96,
+        "scrollHeight": 96,
+        "clientHeight": 96
+      },
+      ".sources-layout": null,
+      ".source-models": null,
+      ".overview-service": null,
+      ".source-index": null,
+      ".split": null,
+      ".split>.card": null,
+      ".split>.sources-column": null,
+      "#model-table": null
+    }
+  },
+  {
+    "style": "layered",
+    "section": "settings",
+    "size": "narrow",
+    "rects": {
+      ".brand": {
+        "x": 108,
+        "y": 32.5,
+        "width": 63.671875,
+        "height": 18,
+        "scrollHeight": 18,
+        "clientHeight": 18
+      },
+      ".nav": {
+        "x": 10,
+        "y": 106,
+        "width": 67,
+        "height": 318,
+        "scrollHeight": 318,
+        "clientHeight": 318
+      },
+      ".masthead": {
+        "x": 88,
+        "y": 0,
+        "width": 812,
+        "height": 96,
+        "scrollHeight": 96,
+        "clientHeight": 96
+      },
+      ".sources-layout": null,
+      ".source-models": null,
+      ".overview-service": null,
+      ".source-index": null,
+      ".split": null,
+      ".split>.card": null,
+      ".split>.sources-column": null,
+      "#model-table": null
+    }
+  },
+  {
+    "style": "index",
+    "section": "overview",
+    "size": "desktop",
+    "rects": {
+      ".brand": {
+        "x": 38,
+        "y": 0,
+        "width": 128.265625,
+        "height": 76,
+        "scrollHeight": 76,
+        "clientHeight": 76
+      },
+      ".nav": {
+        "x": 220,
+        "y": 0,
+        "width": 780,
+        "height": 76,
+        "scrollHeight": 76,
+        "clientHeight": 76
+      },
+      ".masthead": {
+        "x": 0,
+        "y": 76,
+        "width": 1180,
+        "height": 118,
+        "scrollHeight": 118,
+        "clientHeight": 118
+      },
+      ".sources-layout": {
+        "x": 38,
+        "y": 194,
+        "width": 1104,
+        "height": 558,
+        "scrollHeight": 558,
+        "clientHeight": 558
+      },
+      ".source-models": {
+        "x": 326,
+        "y": 284,
+        "width": 816,
+        "height": 468,
+        "scrollHeight": 468,
+        "clientHeight": 468
+      },
+      ".overview-service": {
+        "x": 38,
+        "y": 194,
+        "width": 1104,
+        "height": 66,
+        "scrollHeight": 65,
+        "clientHeight": 65
+      },
+      ".source-index": {
+        "x": 38,
+        "y": 284,
+        "width": 260,
+        "height": 468,
+        "scrollHeight": 468,
+        "clientHeight": 468
+      },
+      ".split": null,
+      ".split>.card": null,
+      ".split>.sources-column": null,
+      "#model-table": null
+    }
+  },
+  {
+    "style": "index",
+    "section": "keys",
+    "size": "desktop",
+    "rects": {
+      ".brand": {
+        "x": 38,
+        "y": 0,
+        "width": 128.265625,
+        "height": 76,
+        "scrollHeight": 76,
+        "clientHeight": 76
+      },
+      ".nav": {
+        "x": 220,
+        "y": 0,
+        "width": 780,
+        "height": 76,
+        "scrollHeight": 76,
+        "clientHeight": 76
+      },
+      ".masthead": {
+        "x": 0,
+        "y": 76,
+        "width": 1180,
+        "height": 118,
+        "scrollHeight": 118,
+        "clientHeight": 118
+      },
+      ".sources-layout": null,
+      ".source-models": null,
+      ".overview-service": null,
+      ".source-index": null,
+      ".split": {
+        "x": 38,
+        "y": 194,
+        "width": 1104,
+        "height": 558,
+        "scrollHeight": 558,
+        "clientHeight": 558
+      },
+      ".split>.card": {
+        "x": 326,
+        "y": 218,
+        "width": 816,
+        "height": 534,
+        "scrollHeight": 534,
+        "clientHeight": 534
+      },
+      ".split>.sources-column": {
+        "x": 38,
+        "y": 218,
+        "width": 260,
+        "height": 534,
+        "scrollHeight": 534,
+        "clientHeight": 534
+      },
+      "#model-table": {
+        "x": 326,
+        "y": 422.578125,
+        "width": 816,
+        "height": 276.640625,
+        "scrollHeight": 394,
+        "clientHeight": 277
+      }
+    }
+  },
+  {
+    "style": "index",
+    "section": "priority",
+    "size": "desktop",
+    "rects": {
+      ".brand": {
+        "x": 38,
+        "y": 0,
+        "width": 128.265625,
+        "height": 76,
+        "scrollHeight": 76,
+        "clientHeight": 76
+      },
+      ".nav": {
+        "x": 220,
+        "y": 0,
+        "width": 780,
+        "height": 76,
+        "scrollHeight": 76,
+        "clientHeight": 76
+      },
+      ".masthead": {
+        "x": 0,
+        "y": 76,
+        "width": 1180,
+        "height": 118,
+        "scrollHeight": 118,
+        "clientHeight": 118
+      },
+      ".sources-layout": null,
+      ".source-models": null,
+      ".overview-service": null,
+      ".source-index": null,
+      ".split": null,
+      ".split>.card": null,
+      ".split>.sources-column": null,
+      "#model-table": null
+    }
+  },
+  {
+    "style": "index",
+    "section": "settings",
+    "size": "desktop",
+    "rects": {
+      ".brand": {
+        "x": 38,
+        "y": 0,
+        "width": 128.265625,
+        "height": 76,
+        "scrollHeight": 76,
+        "clientHeight": 76
+      },
+      ".nav": {
+        "x": 220,
+        "y": 0,
+        "width": 780,
+        "height": 76,
+        "scrollHeight": 76,
+        "clientHeight": 76
+      },
+      ".masthead": {
+        "x": 0,
+        "y": 76,
+        "width": 1180,
+        "height": 118,
+        "scrollHeight": 118,
+        "clientHeight": 118
+      },
+      ".sources-layout": null,
+      ".source-models": null,
+      ".overview-service": null,
+      ".source-index": null,
+      ".split": null,
+      ".split>.card": null,
+      ".split>.sources-column": null,
+      "#model-table": null
+    }
+  },
+  {
+    "style": "index",
+    "section": "overview",
+    "size": "narrow",
+    "rects": {
+      ".brand": {
+        "x": 38,
+        "y": 0,
+        "width": 128.265625,
+        "height": 76,
+        "scrollHeight": 76,
+        "clientHeight": 76
+      },
+      ".nav": {
+        "x": 220,
+        "y": 0,
+        "width": 680,
+        "height": 76,
+        "scrollHeight": 76,
+        "clientHeight": 76
+      },
+      ".masthead": {
+        "x": 0,
+        "y": 76,
+        "width": 900,
+        "height": 118,
+        "scrollHeight": 118,
+        "clientHeight": 118
+      },
+      ".sources-layout": {
+        "x": 24,
+        "y": 194,
+        "width": 852,
+        "height": 438,
+        "scrollHeight": 438,
+        "clientHeight": 438
+      },
+      ".source-models": {
+        "x": 264,
+        "y": 284,
+        "width": 612,
+        "height": 348,
+        "scrollHeight": 348,
+        "clientHeight": 348
+      },
+      ".overview-service": {
+        "x": 24,
+        "y": 194,
+        "width": 852,
+        "height": 66,
+        "scrollHeight": 65,
+        "clientHeight": 65
+      },
+      ".source-index": {
+        "x": 24,
+        "y": 284,
+        "width": 220,
+        "height": 348,
+        "scrollHeight": 348,
+        "clientHeight": 348
+      },
+      ".split": null,
+      ".split>.card": null,
+      ".split>.sources-column": null,
+      "#model-table": null
+    }
+  },
+  {
+    "style": "index",
+    "section": "keys",
+    "size": "narrow",
+    "rects": {
+      ".brand": {
+        "x": 38,
+        "y": 0,
+        "width": 128.265625,
+        "height": 76,
+        "scrollHeight": 76,
+        "clientHeight": 76
+      },
+      ".nav": {
+        "x": 220,
+        "y": 0,
+        "width": 680,
+        "height": 76,
+        "scrollHeight": 76,
+        "clientHeight": 76
+      },
+      ".masthead": {
+        "x": 0,
+        "y": 76,
+        "width": 900,
+        "height": 118,
+        "scrollHeight": 118,
+        "clientHeight": 118
+      },
+      ".sources-layout": null,
+      ".source-models": null,
+      ".overview-service": null,
+      ".source-index": null,
+      ".split": {
+        "x": 24,
+        "y": 194,
+        "width": 852,
+        "height": 438,
+        "scrollHeight": 438,
+        "clientHeight": 438
+      },
+      ".split>.card": {
+        "x": 264,
+        "y": 218,
+        "width": 612,
+        "height": 414,
+        "scrollHeight": 414,
+        "clientHeight": 414
+      },
+      ".split>.sources-column": {
+        "x": 24,
+        "y": 218,
+        "width": 220,
+        "height": 414,
+        "scrollHeight": 414,
+        "clientHeight": 414
+      },
+      "#model-table": {
+        "x": 264,
+        "y": 472.578125,
+        "width": 612,
+        "height": 106.640625,
+        "scrollHeight": 394,
+        "clientHeight": 107
+      }
+    }
+  },
+  {
+    "style": "index",
+    "section": "priority",
+    "size": "narrow",
+    "rects": {
+      ".brand": {
+        "x": 38,
+        "y": 0,
+        "width": 128.265625,
+        "height": 76,
+        "scrollHeight": 76,
+        "clientHeight": 76
+      },
+      ".nav": {
+        "x": 220,
+        "y": 0,
+        "width": 680,
+        "height": 76,
+        "scrollHeight": 76,
+        "clientHeight": 76
+      },
+      ".masthead": {
+        "x": 0,
+        "y": 76,
+        "width": 900,
+        "height": 118,
+        "scrollHeight": 118,
+        "clientHeight": 118
+      },
+      ".sources-layout": null,
+      ".source-models": null,
+      ".overview-service": null,
+      ".source-index": null,
+      ".split": null,
+      ".split>.card": null,
+      ".split>.sources-column": null,
+      "#model-table": null
+    }
+  },
+  {
+    "style": "index",
+    "section": "settings",
+    "size": "narrow",
+    "rects": {
+      ".brand": {
+        "x": 38,
+        "y": 0,
+        "width": 128.265625,
+        "height": 76,
+        "scrollHeight": 76,
+        "clientHeight": 76
+      },
+      ".nav": {
+        "x": 220,
+        "y": 0,
+        "width": 680,
+        "height": 76,
+        "scrollHeight": 76,
+        "clientHeight": 76
+      },
+      ".masthead": {
+        "x": 0,
+        "y": 76,
+        "width": 900,
+        "height": 118,
+        "scrollHeight": 118,
+        "clientHeight": 118
+      },
+      ".sources-layout": null,
+      ".source-models": null,
+      ".overview-service": null,
+      ".source-index": null,
+      ".split": null,
+      ".split>.card": null,
+      ".split>.sources-column": null,
+      "#model-table": null
+    }
+  },
+  {
+    "style": "lexicon",
+    "section": "overview",
+    "size": "desktop",
+    "rects": {
+      ".brand": {
+        "x": 32,
+        "y": 20.5,
+        "width": 189.375,
+        "height": 66,
+        "scrollHeight": 75,
+        "clientHeight": 66
+      },
+      ".nav": {
+        "x": 32,
+        "y": 756,
+        "width": 319.96875,
+        "height": 64,
+        "scrollHeight": 64,
+        "clientHeight": 64
+      },
+      ".masthead": {
+        "x": 0,
+        "y": 0,
+        "width": 1180,
+        "height": 108,
+        "scrollHeight": 107,
+        "clientHeight": 107
+      },
+      ".sources-layout": {
+        "x": 32,
+        "y": 132,
+        "width": 1116,
+        "height": 600,
+        "scrollHeight": 600,
+        "clientHeight": 600
+      },
+      ".source-models": {
+        "x": 32,
+        "y": 132,
+        "width": 802,
+        "height": 600,
+        "scrollHeight": 600,
+        "clientHeight": 600
+      },
+      ".overview-service": {
+        "x": 878,
+        "y": 412,
+        "width": 270,
+        "height": 210.390625,
+        "scrollHeight": 210,
+        "clientHeight": 210
+      },
+      ".source-index": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "scrollHeight": 0,
+        "clientHeight": 0
+      },
+      ".split": null,
+      ".split>.card": null,
+      ".split>.sources-column": null,
+      "#model-table": null
+    }
+  },
+  {
+    "style": "lexicon",
+    "section": "keys",
+    "size": "desktop",
+    "rects": {
+      ".brand": {
+        "x": 32,
+        "y": 20.5,
+        "width": 189.375,
+        "height": 66,
+        "scrollHeight": 75,
+        "clientHeight": 66
+      },
+      ".nav": {
+        "x": 32,
+        "y": 756,
+        "width": 320.9375,
+        "height": 64,
+        "scrollHeight": 64,
+        "clientHeight": 64
+      },
+      ".masthead": {
+        "x": 0,
+        "y": 0,
+        "width": 1180,
+        "height": 108,
+        "scrollHeight": 107,
+        "clientHeight": 107
+      },
+      ".sources-layout": null,
+      ".source-models": null,
+      ".overview-service": null,
+      ".source-index": null,
+      ".split": {
+        "x": 32,
+        "y": 132,
+        "width": 1116,
+        "height": 600,
+        "scrollHeight": 600,
+        "clientHeight": 600
+      },
+      ".split>.card": {
+        "x": 32,
+        "y": 132,
+        "width": 802,
+        "height": 600,
+        "scrollHeight": 600,
+        "clientHeight": 600
+      },
+      ".split>.sources-column": {
+        "x": 878,
+        "y": 132,
+        "width": 270,
+        "height": 600,
+        "scrollHeight": 600,
+        "clientHeight": 600
+      },
+      "#model-table": {
+        "x": 32,
+        "y": 336.578125,
+        "width": 802,
+        "height": 342.640625,
+        "scrollHeight": 566,
+        "clientHeight": 343
+      }
+    }
+  },
+  {
+    "style": "lexicon",
+    "section": "priority",
+    "size": "desktop",
+    "rects": {
+      ".brand": {
+        "x": 32,
+        "y": 20.5,
+        "width": 189.375,
+        "height": 66,
+        "scrollHeight": 75,
+        "clientHeight": 66
+      },
+      ".nav": {
+        "x": 32,
+        "y": 756,
+        "width": 319.96875,
+        "height": 64,
+        "scrollHeight": 64,
+        "clientHeight": 64
+      },
+      ".masthead": {
+        "x": 0,
+        "y": 0,
+        "width": 1180,
+        "height": 108,
+        "scrollHeight": 107,
+        "clientHeight": 107
+      },
+      ".sources-layout": null,
+      ".source-models": null,
+      ".overview-service": null,
+      ".source-index": null,
+      ".split": null,
+      ".split>.card": null,
+      ".split>.sources-column": null,
+      "#model-table": null
+    }
+  },
+  {
+    "style": "lexicon",
+    "section": "settings",
+    "size": "desktop",
+    "rects": {
+      ".brand": {
+        "x": 32,
+        "y": 20.5,
+        "width": 189.375,
+        "height": 66,
+        "scrollHeight": 75,
+        "clientHeight": 66
+      },
+      ".nav": {
+        "x": 32,
+        "y": 756,
+        "width": 319.96875,
+        "height": 64,
+        "scrollHeight": 64,
+        "clientHeight": 64
+      },
+      ".masthead": {
+        "x": 0,
+        "y": 0,
+        "width": 1180,
+        "height": 108,
+        "scrollHeight": 107,
+        "clientHeight": 107
+      },
+      ".sources-layout": null,
+      ".source-models": null,
+      ".overview-service": null,
+      ".source-index": null,
+      ".split": null,
+      ".split>.card": null,
+      ".split>.sources-column": null,
+      "#model-table": null
+    }
+  },
+  {
+    "style": "lexicon",
+    "section": "overview",
+    "size": "narrow",
+    "rects": {
+      ".brand": {
+        "x": 32,
+        "y": 26.5,
+        "width": 165.84375,
+        "height": 54,
+        "scrollHeight": 62,
+        "clientHeight": 54
+      },
+      ".nav": {
+        "x": 32,
+        "y": 636,
+        "width": 319.96875,
+        "height": 64,
+        "scrollHeight": 64,
+        "clientHeight": 64
+      },
+      ".masthead": {
+        "x": 0,
+        "y": 0,
+        "width": 900,
+        "height": 108,
+        "scrollHeight": 107,
+        "clientHeight": 107
+      },
+      ".sources-layout": {
+        "x": 32,
+        "y": 132,
+        "width": 836,
+        "height": 480,
+        "scrollHeight": 480,
+        "clientHeight": 480
+      },
+      ".source-models": {
+        "x": 32,
+        "y": 132,
+        "width": 582,
+        "height": 480,
+        "scrollHeight": 480,
+        "clientHeight": 480
+      },
+      ".overview-service": {
+        "x": 638,
+        "y": 401.609375,
+        "width": 230,
+        "height": 210.390625,
+        "scrollHeight": 210,
+        "clientHeight": 210
+      },
+      ".source-index": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "scrollHeight": 0,
+        "clientHeight": 0
+      },
+      ".split": null,
+      ".split>.card": null,
+      ".split>.sources-column": null,
+      "#model-table": null
+    }
+  },
+  {
+    "style": "lexicon",
+    "section": "keys",
+    "size": "narrow",
+    "rects": {
+      ".brand": {
+        "x": 32,
+        "y": 26.5,
+        "width": 165.84375,
+        "height": 54,
+        "scrollHeight": 62,
+        "clientHeight": 54
+      },
+      ".nav": {
+        "x": 32,
+        "y": 636,
+        "width": 320.9375,
+        "height": 64,
+        "scrollHeight": 64,
+        "clientHeight": 64
+      },
+      ".masthead": {
+        "x": 0,
+        "y": 0,
+        "width": 900,
+        "height": 108,
+        "scrollHeight": 107,
+        "clientHeight": 107
+      },
+      ".sources-layout": null,
+      ".source-models": null,
+      ".overview-service": null,
+      ".source-index": null,
+      ".split": {
+        "x": 32,
+        "y": 132,
+        "width": 836,
+        "height": 480,
+        "scrollHeight": 480,
+        "clientHeight": 480
+      },
+      ".split>.card": {
+        "x": 32,
+        "y": 132,
+        "width": 582,
+        "height": 480,
+        "scrollHeight": 480,
+        "clientHeight": 480
+      },
+      ".split>.sources-column": {
+        "x": 638,
+        "y": 132,
+        "width": 230,
+        "height": 480,
+        "scrollHeight": 480,
+        "clientHeight": 480
+      },
+      "#model-table": {
+        "x": 32,
+        "y": 386.578125,
+        "width": 582,
+        "height": 172.640625,
+        "scrollHeight": 470,
+        "clientHeight": 173
+      }
+    }
+  },
+  {
+    "style": "lexicon",
+    "section": "priority",
+    "size": "narrow",
+    "rects": {
+      ".brand": {
+        "x": 32,
+        "y": 26.5,
+        "width": 165.84375,
+        "height": 54,
+        "scrollHeight": 62,
+        "clientHeight": 54
+      },
+      ".nav": {
+        "x": 32,
+        "y": 636,
+        "width": 319.96875,
+        "height": 64,
+        "scrollHeight": 64,
+        "clientHeight": 64
+      },
+      ".masthead": {
+        "x": 0,
+        "y": 0,
+        "width": 900,
+        "height": 108,
+        "scrollHeight": 107,
+        "clientHeight": 107
+      },
+      ".sources-layout": null,
+      ".source-models": null,
+      ".overview-service": null,
+      ".source-index": null,
+      ".split": null,
+      ".split>.card": null,
+      ".split>.sources-column": null,
+      "#model-table": null
+    }
+  },
+  {
+    "style": "lexicon",
+    "section": "settings",
+    "size": "narrow",
+    "rects": {
+      ".brand": {
+        "x": 32,
+        "y": 26.5,
+        "width": 165.84375,
+        "height": 54,
+        "scrollHeight": 62,
+        "clientHeight": 54
+      },
+      ".nav": {
+        "x": 32,
+        "y": 636,
+        "width": 319.96875,
+        "height": 64,
+        "scrollHeight": 64,
+        "clientHeight": 64
+      },
+      ".masthead": {
+        "x": 0,
+        "y": 0,
+        "width": 900,
+        "height": 108,
+        "scrollHeight": 107,
+        "clientHeight": 107
+      },
+      ".sources-layout": null,
+      ".source-models": null,
+      ".overview-service": null,
+      ".source-index": null,
+      ".split": null,
+      ".split>.card": null,
+      ".split>.sources-column": null,
+      "#model-table": null
+    }
+  }
+]

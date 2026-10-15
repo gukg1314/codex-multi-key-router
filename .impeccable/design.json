@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-14T21:02:20.357352+00:00",
-  "title": "Design System: Codex 路由工具 · I「模型字典」",
+  "generatedAt": "2026-10-15T03:17:26.127517+00:00",
+  "title": "Design System: Codex 路由工具 · 三种界面风格",
   "extensions": {
     "breakpoints": [
       {
@@ -18,7 +18,7 @@
     "focus": [
       {
         "name": "control-focus",
-        "value": "3px solid var(--accent)",
+        "value": "3px solid var(--focus)",
         "offset": "3px",
         "purpose": "按钮、输入、下拉、summary和链接的可见键盘焦点。"
       },
@@ -40,6 +40,220 @@
         "value": "animation:none!important;transition:none!important",
         "purpose": "prefers-reduced-motion:reduce 下停止动画和过渡。"
       }
+    ],
+    "variants": {
+      "legacyFallback": "lexicon",
+      "themeAttribute": "data-theme",
+      "styleAttribute": "data-ui-style",
+      "layered": {
+        "label": "默认主题",
+        "direction": "F「浮层工作台」",
+        "selector": "html[data-ui-style=\"layered\"]",
+        "colorBindings": {
+          "bg": "{colors.layered-bg}",
+          "panel": "{colors.layered-panel}",
+          "text": "{colors.layered-text}",
+          "muted": "{colors.layered-muted}",
+          "border": "{colors.layered-border}",
+          "accent": "{colors.layered-accent}",
+          "selected": "{colors.layered-selected}",
+          "dock": "{colors.layered-dock}"
+        },
+        "darkColorBindings": {
+          "bg": "{colors.layered-bg-dark}",
+          "panel": "{colors.layered-panel-dark}",
+          "text": "{colors.layered-text-dark}",
+          "muted": "{colors.layered-muted-dark}",
+          "border": "{colors.layered-border-dark}",
+          "accent": "{colors.layered-accent-dark}",
+          "selected": "{colors.layered-selected-dark}",
+          "dock": "{colors.layered-dock-dark}"
+        },
+        "typographyRefs": [
+          "{typography.layered-title}",
+          "{typography.compact-model}",
+          "{typography.body}",
+          "{typography.auxiliary}"
+        ],
+        "shapeRefs": [
+          "{rounded.layered-sheet}",
+          "{rounded.layered-source}",
+          "{rounded.layered-control}",
+          "{rounded.layered-nav}"
+        ],
+        "geometry": {
+          "viewport": "1180×820",
+          "railWidth": "88px",
+          "rootGridRows": "96px minmax(0,1fr) 90px",
+          "pageX": "26px",
+          "columnGap": "18px",
+          "serviceWidth": "254px",
+          "overviewFloatingHeight": "472px",
+          "overviewDockHeight": "126px",
+          "keyDockHeight": "148px",
+          "formControlHeight": "42px",
+          "overviewControlHeight": "36px",
+          "appearanceSegmentHeight": "40px"
+        },
+        "breakpoints": {
+          "980px": {
+            "pageX": "20px",
+            "columnGap": "14px",
+            "serviceWidth": "230px",
+            "keyWorkspaceMinHeight": "650px",
+            "countSize": "21px"
+          },
+          "800px": {
+            "flow": "模型、服务、来源dock纵排；dock内部横向滚动",
+            "modelMinHeight": "460px",
+            "serviceMinHeight": "260px",
+            "keyEditorMinHeight": "480px",
+            "keyDockHeight": "148px"
+          }
+        },
+        "depth": {
+          "sheetShadow": "0 15px 34px #435b8210",
+          "navigationShadow": "0 5px 16px #4c6da115",
+          "blur": "14px",
+          "blurProperties": [
+            "backdrop-filter",
+            "-webkit-backdrop-filter"
+          ],
+          "darkRailColorRef": "{colors.layered-rail-dark}",
+          "dockShadow": "0 10px 24px #435b8208"
+        }
+      },
+      "index": {
+        "label": "工作索引",
+        "direction": "C「索引工作室」",
+        "selector": "html[data-ui-style=\"index\"]",
+        "colorBindings": {
+          "bg": "{colors.index-bg}",
+          "panel": "{colors.index-panel}",
+          "text": "{colors.index-text}",
+          "muted": "{colors.index-muted}",
+          "border": "{colors.index-border}",
+          "accent": "{colors.index-accent}",
+          "index": "{colors.index-mint}",
+          "nativeModel": "{colors.index-native}",
+          "sourceSelected": "{colors.index-source-selected}",
+          "focus": "{colors.index-focus}"
+        },
+        "darkColorBindings": {
+          "bg": "{colors.index-bg-dark}",
+          "panel": "{colors.index-panel-dark}",
+          "text": "{colors.index-text-dark}",
+          "muted": "{colors.index-muted-dark}",
+          "border": "{colors.index-border-dark}",
+          "accent": "{colors.index-accent-dark}",
+          "index": "{colors.index-mint-dark}",
+          "nativeModel": "{colors.index-native-dark}",
+          "sourceSelected": "{colors.index-source-selected-dark}",
+          "focus": "{colors.index-focus-dark}"
+        },
+        "typographyRefs": [
+          "{typography.index-title}",
+          "{typography.index-title-compact}",
+          "{typography.index-count}",
+          "{typography.compact-model}"
+        ],
+        "shapeRefs": [
+          "{rounded.index-panel}",
+          "{rounded.index-model}",
+          "{rounded.index-control}"
+        ],
+        "geometry": {
+          "viewport": "1180×820",
+          "rootGridRows": "76px 118px minmax(0,1fr) 54px",
+          "overviewControlRow": "66px",
+          "pageX": "38px",
+          "sourceWidth": "260px",
+          "columnGap": "28px",
+          "modelColumns": 2,
+          "modelMinHeight": "76px",
+          "formControlHeight": "42px",
+          "overviewControlHeight": "34px",
+          "appearanceSegmentHeight": "40px"
+        },
+        "breakpoints": {
+          "980px": {
+            "pageX": "24px",
+            "sourceWidth": "220px",
+            "columnGap": "20px",
+            "titleSize": "36px",
+            "navigationGap": "20px"
+          },
+          "800px": {
+            "flow": "服务、来源、模型纵排",
+            "titleSize": "32px",
+            "navigationLeft": "185px",
+            "navigationGap": "18px",
+            "navigationOverflow": "auto",
+            "modelMinHeight": "400px",
+            "keyEditorMinHeight": "480px",
+            "keySourcesMinHeight": "220px"
+          }
+        },
+        "depth": {
+          "sourceSelectedShadow": "0 3px 12px #17382f08",
+          "blur": "none",
+          "backgroundGradient": "none"
+        }
+      },
+      "lexicon": {
+        "label": "模型字典",
+        "direction": "I「模型字典」",
+        "selector": "html[data-ui-style=\"lexicon\"]",
+        "colorBindings": {
+          "bg": "{colors.bg}",
+          "text": "{colors.text}",
+          "muted": "{colors.muted}",
+          "border": "{colors.border}",
+          "accent": "{colors.accent}"
+        },
+        "darkColorBindings": {
+          "bg": "{colors.bg-dark}",
+          "text": "{colors.text-dark}",
+          "muted": "{colors.muted-dark}",
+          "border": "{colors.border-dark}",
+          "accent": "{colors.accent-dark}"
+        },
+        "typographyRefs": [
+          "{typography.wordmark}",
+          "{typography.model}",
+          "{typography.body}"
+        ],
+        "geometry": {
+          "viewport": "1180×820",
+          "rootGridRows": "108px minmax(0,1fr) 64px",
+          "pageX": "32px",
+          "pageY": "24px",
+          "sourceWidth": "270px",
+          "columnGap": "44px",
+          "modelRowHeight": "72px",
+          "formControlHeight": "42px"
+        },
+        "depth": {
+          "shadow": "none",
+          "blur": "none",
+          "backgroundGradient": "none"
+        }
+      }
+    },
+    "intentionalTypographyRefs": [
+      "{typography.auxiliary}",
+      "{typography.group-title}",
+      "{typography.small-title}",
+      "{typography.service-state}",
+      "{typography.lexicon-model-compact}",
+      "{typography.index-title-compact}"
+    ],
+    "intentionalShapeRefs": [
+      "{rounded.protocol}",
+      "{rounded.input}",
+      "{rounded.layered-nav}",
+      "{rounded.dialog}",
+      "{rounded.switch}"
     ]
   },
   "components": [
@@ -47,37 +261,37 @@
       "name": "主按钮",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "保存与主要操作；真实 disabled 阻止重复提交。",
+      "description": "模型字典兼容样例：保存与主要操作；真实 disabled 阻止重复提交。",
       "html": "<button class=\"ds-button-primary ds-control\">保存勾选</button>",
-      "css": ".ds-button-primary{min-height:var(--control-height);border:1px solid var(--text);border-radius:0;background:var(--text);color:var(--bg);font:var(--button-size) var(--sans);display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 12px;white-space:nowrap;cursor:pointer}.ds-button-primary:hover{background:var(--primary-hover)}.ds-button-primary:disabled{color:var(--disabled-text);border-color:var(--disabled-border);background:transparent;cursor:default}.ds-control:focus-visible{outline:3px solid var(--accent);outline-offset:3px}"
+      "css": ".ds-button-primary{min-height:var(--control-height);border:1px solid var(--text);border-radius:0;background:var(--text);color:var(--bg);font:var(--button-size) var(--sans);display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 12px;white-space:nowrap;cursor:pointer}.ds-button-primary:hover{background:var(--primary-hover)}.ds-button-primary:disabled{color:var(--disabled-text);border-color:var(--disabled-border);background:transparent;cursor:default}.ds-control:focus-visible{outline:3px solid var(--focus);outline-offset:3px}"
     },
     {
       "name": "次按钮",
       "kind": "button",
-      "description": "编辑、拉取与次级操作。",
+      "description": "模型字典兼容样例：编辑、拉取与次级操作。",
       "html": "<button class=\"ds-button-secondary ds-control\">拉取模型</button>",
-      "css": ".ds-button-secondary{min-height:var(--control-height);border:1px solid var(--text);border-radius:0;background:transparent;color:var(--text);font:var(--button-size) var(--sans);display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 12px;white-space:nowrap;cursor:pointer}.ds-button-secondary:hover{background:var(--hover)}.ds-button-secondary:disabled{color:var(--disabled-text);border-color:var(--disabled-border);background:transparent;cursor:default}.ds-control:focus-visible{outline:3px solid var(--accent);outline-offset:3px}"
+      "css": ".ds-button-secondary{min-height:var(--control-height);border:1px solid var(--text);border-radius:0;background:transparent;color:var(--text);font:var(--button-size) var(--sans);display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 12px;white-space:nowrap;cursor:pointer}.ds-button-secondary:hover{background:var(--hover)}.ds-button-secondary:disabled{color:var(--disabled-text);border-color:var(--disabled-border);background:transparent;cursor:default}.ds-control:focus-visible{outline:3px solid var(--focus);outline-offset:3px}"
     },
     {
       "name": "模型搜索",
       "kind": "input",
       "refersTo": "input",
-      "description": "使用系统 UI 字体的直角搜索框。",
+      "description": "模型字典兼容样例：使用系统 UI 字体的直角搜索框。",
       "html": "<input class=\"ds-search ds-control\" type=\"search\" aria-label=\"搜索模型\" placeholder=\"搜索模型…\">",
-      "css": ".ds-search{min-height:var(--control-height);background:var(--input-bg);color:var(--text);border:1px solid var(--border);border-radius:0;padding:8px 10px;max-width:100%;font:var(--body-size)/1.5 var(--sans)}.ds-search[aria-invalid=\"true\"]{border-color:var(--err)}.ds-control:focus-visible{outline:3px solid var(--accent);outline-offset:3px}"
+      "css": ".ds-search{min-height:var(--control-height);background:var(--input-bg);color:var(--text);border:1px solid var(--border);border-radius:0;padding:8px 10px;max-width:100%;font:var(--body-size)/1.5 var(--sans)}.ds-search[aria-invalid=\"true\"]{border-color:var(--err)}.ds-control:focus-visible{outline:3px solid var(--focus);outline-offset:3px}"
     },
     {
       "name": "底部导航",
       "kind": "nav",
       "refersTo": "navigation",
-      "description": "朱红导航、纸色当前页下划线；标签始终保留。",
+      "description": "模型字典兼容样例：朱红导航、纸色当前页下划线；标签始终保留。",
       "html": "<nav class=\"ds-navigation\" aria-label=\"主导航\"><button aria-current=\"page\">概览</button><button>Key 与模型</button><button>路由优先级</button><button>设置</button></nav>",
       "css": ".ds-navigation{display:flex;height:var(--nav-height);gap:var(--nav-gap);padding:0 var(--page-pad-x);background:var(--accent);color:var(--accent-ink)}.ds-navigation button{position:relative;border:0;background:transparent;color:inherit;padding:0 2px;font:500 14px var(--sans);white-space:nowrap;cursor:pointer}.ds-navigation button[aria-current=\"page\"]{font-weight:700}.ds-navigation button[aria-current=\"page\"]:after{content:\"\";position:absolute;bottom:14px;left:2px;right:2px;height:2px;background:var(--bg)}.ds-navigation button:hover{color:var(--accent-faint)}.ds-navigation button:focus-visible{outline:3px solid var(--accent-ink);outline-offset:3px}"
     },
     {
       "name": "状态文字",
       "kind": "chip",
-      "description": "轻量状态标签；已配置表示存在密钥。",
+      "description": "模型字典兼容样例：轻量状态标签；已配置表示存在密钥。",
       "html": "<span class=\"ds-status\">已配置</span>",
       "css": ".ds-status{display:inline-block;font:var(--aux-size)/1.5 var(--sans);color:var(--ok)}"
     },
@@ -85,40 +299,43 @@
       "name": "来源索引",
       "kind": "custom",
       "refersTo": "source-active",
-      "description": "来源选择项以朱红底表示选中，右端显示模型数量。",
+      "description": "模型字典兼容样例：来源选择项以朱红底表示选中，右端显示模型数量。",
       "html": "<button class=\"ds-source ds-control\" aria-pressed=\"true\"><span class=\"ds-source-copy\"><strong>主力 Key</strong><small>已配置</small></span><span class=\"ds-source-number\">7</span></button>",
-      "css": ".ds-source{width:100%;min-height:var(--source-row-height);border:0;border-bottom:1px solid var(--border);background:transparent;color:var(--text);display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 10px;text-align:left;cursor:pointer}.ds-source:hover{background:var(--selected)}.ds-source[aria-pressed=\"true\"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}.ds-source-copy{min-width:0;display:block}.ds-source-copy strong{display:block;font:600 var(--source-name-size) var(--sans);overflow-wrap:anywhere}.ds-source-copy small{display:block;font:var(--aux-size) var(--sans);color:var(--muted);margin-top:2px}.ds-source[aria-pressed=\"true\"] small{color:var(--accent-faint)}.ds-source-number{font:var(--source-number-size)/1 var(--serif);flex:none}.ds-control:focus-visible{outline:3px solid var(--accent);outline-offset:3px}"
+      "css": ".ds-source{width:100%;min-height:var(--source-row-height);border:0;border-bottom:1px solid var(--border);background:transparent;color:var(--text);display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 10px;text-align:left;cursor:pointer}.ds-source:hover{background:var(--selected)}.ds-source[aria-pressed=\"true\"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}.ds-source-copy{min-width:0;display:block}.ds-source-copy strong{display:block;font:600 var(--source-name-size) var(--sans);overflow-wrap:anywhere}.ds-source-copy small{display:block;font:var(--aux-size) var(--sans);color:var(--muted);margin-top:2px}.ds-source[aria-pressed=\"true\"] small{color:var(--accent-faint)}.ds-source-number{font:var(--source-number-size)/1 var(--serif);flex:none}.ds-control:focus-visible{outline:3px solid var(--focus);outline-offset:3px}"
     },
     {
       "name": "直角开关",
       "kind": "custom",
-      "description": "设置开关保留可访问状态；内方块随开启状态移到右边。",
+      "description": "模型字典兼容样例：设置开关保留可访问状态；内方块随开启状态移到右边。",
       "html": "<button class=\"ds-switch ds-control\" role=\"switch\" aria-checked=\"true\" aria-label=\"接管 Codex 模型列表\"></button>",
-      "css": ".ds-switch{width:44px;height:26px;flex:none;border:1px solid var(--muted);background:transparent;padding:3px;display:flex;align-items:center;justify-content:flex-start;cursor:pointer}.ds-switch:before{content:\"\";width:18px;height:18px;background:var(--muted)}.ds-switch[aria-checked=\"true\"]{background:var(--accent);border-color:var(--accent);justify-content:flex-end}.ds-switch[aria-checked=\"true\"]:before{background:var(--accent-ink)}.ds-switch:disabled{opacity:.5;cursor:default}.ds-control:focus-visible{outline:3px solid var(--accent);outline-offset:3px}"
+      "css": ".ds-switch{width:44px;height:26px;flex:none;border:1px solid var(--muted);background:transparent;padding:3px;display:flex;align-items:center;justify-content:flex-start;cursor:pointer}.ds-switch:before{content:\"\";width:18px;height:18px;background:var(--muted)}.ds-switch[aria-checked=\"true\"]{background:var(--accent);border-color:var(--accent);justify-content:flex-end}.ds-switch[aria-checked=\"true\"]:before{background:var(--accent-ink)}.ds-switch:disabled{opacity:.5;cursor:default}.ds-control:focus-visible{outline:3px solid var(--focus);outline-offset:3px}"
     },
     {
       "name": "弹窗内容框",
       "kind": "card",
-      "description": "添加或编辑 Key 的实色直角内容框。",
+      "description": "模型字典兼容样例：添加或编辑 Key 的实色直角内容框。",
       "html": "<section class=\"ds-dialog-box\"><h3>添加 Key</h3><p>填写名称、密钥与上游地址。</p></section>",
       "css": ".ds-dialog-box{background:var(--panel);color:var(--text);border:1px solid var(--text);width:500px;max-width:100%;max-height:100%;overflow:auto;padding:24px;font:var(--body-size)/1.5 var(--sans)}.ds-dialog-box h3{font-size:28px;font-weight:600;margin:0 0 18px}.ds-dialog-box p{margin:0}"
     }
   ],
   "narrative": {
-    "northStar": "模型字典",
-    "overview": "模型名称是主要阅读对象。左边读模型，右边选来源和处理路由，顶部确认服务与接管状态；纸色画布、墨色细线和朱红导航保持清楚的阅读顺序。\n\n用户已选 I，并授权删除概览最近事件、补齐排版后施工。四页已实现，**代码回归与独立截图评审通过**；完整实际参数以 [正式 CSS](ui/index.html) 为准，详见 [UI施工参数-I.md](docs/UI施工参数-I.md)。施工参考为 [批准后的效果图](docs/ui-implementation-I/i-overview-approved.png) 和 [参考 HTML](docs/ui-exploration/2026-10-15/round-3/i-overview-approved.html)；[验收记录](docs/ui-implementation-I/README.md) 说明证据及未验证项。上一版 `docs/UI施工参数.md` 保留作历史资料。",
+    "northStar": "浮层工作台 / 工作索引 / 模型字典",
+    "overview": "三种风格分别保留用户选定的构图、排版、材质与信息层级。F 用左导航、双浮层和横向来源 dock；C 用顶部导航、浅绿来源索引和两列模型卡片；I 用大字模型目录、墨线和朱红底部导航。切换仍操作同一份来源与模型数据。\n\n前置 tokens 保留 I 的原名称与值，供旧配置及无风格属性时兼容；`layered-*`、`index-*` 是 F/C 的实装覆盖值，深色使用相同前缀的 `*-dark`。完整施工基准见 [三风格参数](docs/UI施工参数-界面风格.md) 与 [无事件静态图](docs/ui-style-switch/approved/README.md)；I 仍以 [既有参数](docs/UI施工参数-I.md)、[批准图](docs/ui-implementation-I/i-overview-approved.png) 为准。本次验收证据由主流程另行记录，不把既有 I 的结论外推到新风格。\n\n| 设置名称 | 配置 / 根属性 | 已选方向 |\n| --- | --- | --- |\n| 默认主题 | `layered` / `data-ui-style=\"layered\"` | F「浮层工作台」 |\n| 工作索引 | `index` / `data-ui-style=\"index\"` | C「索引工作室」 |\n| 模型字典 | `lexicon` / `data-ui-style=\"lexicon\"` | I「模型字典」；旧配置兼容默认 |\n\n“默认主题”是 F 的产品选项名；不改变旧配置的默认风格。风格与浅/深色独立组合，四页与共用控件一起切换。",
     "keyCharacteristics": [
-      "66px 英文品牌与 44px 模型目录形成主要记忆点。",
-      "左工作区、右来源索引和底部朱红导航组织操作。",
+      "F 保持 88px 左导航、蓝紫背景、双浮层和 126px 横向来源 dock。",
+      "C 保持顶部横向导航、宋体页标题、左浅绿索引与右两列模型卡片。",
+      "I 保持 66px 英文品牌、44px 模型目录和底部朱红导航。",
       "中文、表单与密集数据使用系统 UI 字体，真实状态与操作保持可读。"
     ],
     "dos": [
-      "**Do** 保持批准图的左模型右来源、108/648/64 三段和朱红导航。",
+      "**Do** 分别保留 F 的左导航/双浮层/dock、C 的顶部导航/左索引/双列目录、I 的大字目录/朱红底部导航。",
+      "**Do** 使用准确的“默认主题 / 工作索引 / 模型字典”名称与配置映射，旧配置继续模型字典。",
       "**Do** 复用四页业务与主题机制，保留 macOS/Windows 原生窗口、菜单/托盘和平台字体差异。",
       "**Do** 在核心功能、窄窗和深色最终验收后，由主流程统一记录结果与未验证项。"
     ],
     "donts": [
       "**Don't** 新增余额、趋势、健康监控、自动轮换或会话功能；正文固定来源，失败不自动切换。",
+      "**Don't** 把三种风格做成同一布局换色，或从旧 F/C 样稿恢复最近事件。",
       "**Don't** 强行把表单和优先级全部放大为 44px，挤掉下拉、勾选和保存操作。",
       "**Don't** 写入真实密钥、账号、私人链接或完整 Key 日志；不模拟另一平台窗口按钮。",
       "**Don't** 把首版截图或静态设计样稿写成功能验收通过；本次不制作安装包。"

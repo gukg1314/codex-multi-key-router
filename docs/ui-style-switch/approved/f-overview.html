@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Codex 路由 · 浮层工作台</title>
+<style>
+:root{--ink:#203652;--muted:#425570;--blue:#3562b5;--line:#d5e0ef;--glass:#ffffffda;--violet:#6952b5}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:#e9effa}button{font:inherit;cursor:pointer;color:inherit}button:focus-visible{outline:3px solid #3562b5;outline-offset:3px}button:disabled{cursor:default;opacity:.38}.app{width:1180px;height:820px;display:grid;grid-template-columns:88px 1fr;background:radial-gradient(ellipse at 95% 3%,#d1c5f1 0,transparent 45%),radial-gradient(ellipse at 35% 96%,#b9d7f1 0,transparent 50%),#eaf0f9}
+.rail{display:flex;flex-direction:column;align-items:center;padding:27px 10px 24px;background:#ffffff88;border-right:1px solid #ffffffaa}.mark{width:34px;height:34px;color:var(--blue);margin-bottom:45px}.rail nav{display:grid;gap:14px;width:100%}.nav-button{border:0;background:transparent;min-height:69px;padding:12px 2px 9px;border-radius:13px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;white-space:nowrap}.nav-button svg{width:22px;height:22px}.nav-button.active{background:#fff;color:var(--blue);box-shadow:0 5px 16px #4c6da115;font-weight:600}.rail .local{margin-top:auto;font-size:12px;line-height:1.7;color:var(--muted);text-align:center}
+.main{padding:26px;display:grid;grid-template-rows:70px 472px 126px 30px;gap:18px;min-width:0}.heading{display:flex;align-items:center;gap:30px}.page-title .brand{font-size:12px;color:var(--muted);margin-bottom:4px}.page-title h1{font-size:30px;font-weight:650;letter-spacing:-.5px;margin:0;line-height:1.2}.counts{display:flex;gap:30px;margin-left:auto}.count strong{display:block;font-size:22px;font-weight:550;line-height:1.3;font-variant-numeric:tabular-nums}.count span{display:block;font-size:12px;color:var(--muted);margin-top:3px}
+.work{display:grid;grid-template-columns:minmax(0,1fr) 254px;gap:18px;min-height:0}.sheet{background:var(--glass);border:1px solid #fff;border-radius:18px;box-shadow:0 15px 34px #435b8210;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}.models-sheet{padding:24px}.sheet-heading{display:flex;align-items:center;gap:10px;margin-bottom:18px}.sheet-heading h2{margin:0;font-size:23px;font-weight:600}.configured{font-size:12px;color:#3d715d;display:flex;align-items:center;gap:5px}.configured:before{content:"";width:5px;height:5px;background:#3d715d;border-radius:50%}.total{margin-left:auto;font-size:12px;color:var(--muted)}table{width:100%;border-collapse:collapse;text-align:left}thead{color:var(--muted);font-size:12px}thead th{height:34px;font-weight:500;border-bottom:1px solid var(--line)}tbody th,tbody td{height:43px;border-bottom:1px solid #dde5f2}tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}tbody th{font-size:15px;font-weight:500;letter-spacing:.05px}tbody td{text-align:right;width:130px}.protocol{display:inline-block;padding:4px 8px;border-radius:5px;background:#edf3fc;color:#355b95;font-size:12px}.protocol.bridge{color:#645187;background:#f2eef9}.model-foot{display:flex;align-items:center;gap:7px;border-top:1px solid var(--line);padding-top:13px;margin-top:9px;color:var(--muted);font-size:12px}.model-foot svg{width:13px;height:13px}
+.service-sheet{padding:23px 19px;display:flex;flex-direction:column}.service-sheet h2{font-size:15px;margin:0 0 15px;font-weight:600}.service-state{display:flex;align-items:center;gap:7px;font-size:16px;font-weight:600}.dot{width:7px;height:7px;background:#41816a;border-radius:50%}.takeover{font-size:12px;color:var(--muted);margin:6px 0 18px 14px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.actions button{height:36px;font-size:12px;padding:0 6px;border:1px solid #cfdbeb;border-radius:8px;background:#ffffffa8;display:flex;align-items:center;justify-content:center;gap:5px}.actions svg{width:13px;height:13px}.actions button:first-child{grid-column:1/-1;background:var(--blue);border-color:var(--blue);color:#fff;font-size:13px;font-weight:600}.actions button:last-child{grid-column:1/-1;background:transparent}.events{margin-top:auto;border-top:1px solid var(--line);padding-top:17px}.events h3{font-size:12px;font-weight:500;margin:0 0 12px;color:var(--muted)}.event{margin-bottom:11px}.event:last-child{margin-bottom:0}.event time{font-size:12px;font-variant-numeric:tabular-nums;color:var(--muted)}.event p{font-size:12px;margin:3px 0 0}
+.source-dock{background:#ffffff91;border:1px solid #fff;border-radius:18px;padding:13px 18px 15px;box-shadow:0 10px 24px #435b8208}.source-dock .dock-label{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:11px}.dock-label strong{font-weight:500}.source-items{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.source{width:100%;height:66px;background:#ffffff99;border:1px solid #dde4f3;border-radius:10px;padding:11px 14px;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:10px}.source.active{color:#fff;background:var(--violet);border-color:var(--violet);box-shadow:0 6px 16px #6952b525}.source strong{display:block;font-weight:550;font-size:14px;white-space:nowrap}.source small{display:block;font-size:12px;color:var(--muted);margin-top:4px}.source.active small{color:#eee8ff}.source .number{font-size:22px;font-variant-numeric:tabular-nums;font-weight:500}.source svg{width:13px;height:13px}.source-meta{display:flex;align-items:center;gap:5px}
+.footer{display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:12px}.footer span:last-child{font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail"><svg class="mark" viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M6 5v12a5 5 0 0 0 5 5h11M6 11h11a5 5 0 0 0 5-5" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><circle cx="6" cy="5" r="3" fill="currentColor"/><circle cx="22" cy="5" r="3" fill="currentColor"/><circle cx="22" cy="22" r="3" fill="currentColor"/></svg><nav id="nav" aria-label="主导航"></nav><div class="local">本地服务<br><span id="version"></span></div></aside>
+  <main class="main">
+    <header class="heading"><div class="page-title"><div class="brand">Codex 路由</div><h1>概览</h1></div><div class="counts" id="counts"></div></header>
+    <div class="work">
+      <section class="sheet models-sheet" aria-labelledby="model-title"><header class="sheet-heading"><h2 id="model-title">主力 Key</h2><span class="configured">已配置</span><span class="total">7 个模型</span></header><table><thead><tr><th scope="col">模型</th><th scope="col" style="text-align:right">接入方式</th></tr></thead><tbody id="models"></tbody></table><div class="model-foot"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 7h8v7H4zM5 7V4a3 3 0 0 1 6 0v3" stroke="currentColor" stroke-width="1.2"/></svg>固定来源，失败不自动切换</div></section>
+      <aside class="sheet service-sheet" aria-label="服务与控制"><h2>路由服务</h2><div class="service-state"><span class="dot"></span>运行中</div><div class="takeover">已接管 Codex</div><div class="actions" id="actions"></div></aside>
+    </div>
+    <section class="source-dock" aria-label="模型来源"><div class="dock-label"><strong>模型来源</strong><span>当前查看：主力 Key</span></div><div class="source-items" id="sources"></div></section>
+    <footer class="footer"><span>选择来源查看模型；模型目录刷新后生效。</span><span>Codex 路由 · 本地服务</span></footer>
+  </main>
+</div>
+<script>
+/* 三套设计共用的虚构内容，不连接管理服务或读取本机配置。 */
+window.ROUTER_PREVIEW = Object.freeze({
+  title: 'Codex 路由',
+  version: '1.2.11',
+  page: '概览',
+  running: '运行中',
+  takeover: '已接管 Codex',
+  nav: ['概览', 'Key 与模型', '路由优先级', '设置'],
+  actions: ['刷新模型', '启用路由', '停止路由', '切回官方'],
+  counts: [
+    { label: 'Key 模型', value: 10 },
+    { label: '已配置 Key', value: 3 },
+    { label: '官方模型', value: 12 },
+    { label: '同名模型', value: 3 }
+  ],
+  sources: [
+    { name: '官方账号', count: 12, state: '已登录' },
+    { name: '主力 Key', count: 7, state: '已配置', selected: true },
+    { name: '备用 Key', count: 3, state: '已配置' },
+    { name: '测试 Key', count: 0, state: '已停用' }
+  ],
+  models: [
+    { name: 'gpt-6.1-sol', wire: '原生直通' },
+    { name: 'gpt-6-astra', wire: '原生直通' },
+    { name: 'gpt-6-luna', wire: '原生直通' },
+    { name: 'claude-sonnet-5.5', wire: 'Chat 桥接' },
+    { name: 'deepseek-v4.1', wire: 'Chat 桥接' },
+    { name: 'glm-5.3-flash', wire: 'Chat 桥接' },
+    { name: 'kimi-k3', wire: 'Chat 桥接' }
+  ]
+});
+
+</script>
+<script>
+const data=window.ROUTER_PREVIEW;
+function icon(path){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${path}</svg>`;}
+const navIcons=['<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>','<circle cx="15" cy="8" r="5"/><path d="m11 12-8 8v-4h4v-4h4"/>','<path d="M4 4v10a6 6 0 0 0 6 6h10M4 10h9a5 5 0 0 0 5-5V3m-4 4 4-4 4 4m-6 9 4 4-4 4"/>','<path d="m9 3 1-2h4l1 2 3 2 2 .2 2 3-1 2v3l1 2-2 3-2 .2-3 2-1 2h-4l-1-2-3-2-2-.2-2-3 1-2v-3l-1-2 2-3L6 5z"/><circle cx="12" cy="12" r="3"/>'];
+const actionIcons=['<path d="M20 7v5h-5M4 17v-5h5M6 6a8 8 0 0 1 13 2M5 16a8 8 0 0 0 13 2"/>','<path d="M12 2v10M6 5a9 9 0 1 0 12 0"/>','<rect x="5" y="5" width="14" height="14" rx="2"/>','<path d="M4 17v-4a5 5 0 0 1 5-5h11m-5-5 5 5-5 5"/>'];
+document.getElementById('version').textContent=`v${data.version}`;
+document.getElementById('nav').innerHTML=data.nav.map((name,index)=>`<button type="button" class="nav-button ${index===0?'active':''}" ${index===0?'aria-current="page"':''}>${icon(navIcons[index])}<span>${name}</span></button>`).join('');
+document.getElementById('counts').innerHTML=data.counts.map(item=>`<div class="count"><strong>${item.value}</strong><span>${item.label}</span></div>`).join('');
+document.getElementById('models').innerHTML=data.models.map(model=>`<tr><th scope="row">${model.name}</th><td><span class="protocol ${model.wire==='Chat 桥接'?'bridge':''}">${model.wire}</span></td></tr>`).join('');
+document.getElementById('actions').innerHTML=data.actions.map((name,index)=>`<button type="button" ${index===1?'disabled':''}>${icon(actionIcons[index])}${name}</button>`).join('');
+document.getElementById('sources').innerHTML=data.sources.map(source=>`<button type="button" class="source ${source.selected?'active':''}" aria-pressed="${!!source.selected}"><span><strong>${source.name}</strong><small class="source-meta">${source.selected?icon('<path d="m5 12 4 4L19 6"/>'):''}${source.state}</small></span><span class="number" aria-label="${source.count} 个模型">${source.count}</span></button>`).join('');
+console.info('ui-preview direction=F viewport=1180x820 source=shared-fictional-data backend=disconnected events=removed');
+</script>
+</body>
+</html>
