@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="plate" x1="160" y1="100" x2="864" y2="924" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f8fbff"/>
+      <stop offset=".58" stop-color="#f0f5fc"/>
+      <stop offset="1" stop-color="#eaeaf7"/>
+    </linearGradient>
+    <linearGradient id="route" x1="210" y1="512" x2="804" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3562b5"/>
+      <stop offset="1" stop-color="#6952b5"/>
+    </linearGradient>
+  </defs>
+  <rect x="64" y="64" width="896" height="896" rx="204" fill="url(#plate)" stroke="#dce5f4" stroke-width="2"/>
+  <g fill="none" stroke="url(#route)" stroke-width="64" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="450" y="480" width="296" height="64" fill="url(#route)" stroke="none"/>
+    <path d="M520 512c104 0 70-174 174-174h52"/>
+    <path d="M520 512c104 0 70 174 174 174h52"/>
+    <circle cx="326" cy="512" r="124"/>
+  </g>
+  <g fill="#6952b5">
+    <circle cx="756" cy="338" r="48"/>
+    <circle cx="756" cy="512" r="48"/>
+    <circle cx="756" cy="686" r="48"/>
+  </g>
+</svg>

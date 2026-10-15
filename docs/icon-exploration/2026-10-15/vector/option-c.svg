@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="plate" x1="160" y1="100" x2="864" y2="924" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f8fbff"/>
+      <stop offset=".58" stop-color="#f0f5fc"/>
+      <stop offset="1" stop-color="#eaeaf7"/>
+    </linearGradient>
+    <linearGradient id="gateway" x1="306" y1="408" x2="798" y2="776" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3562b5"/>
+      <stop offset="1" stop-color="#6952b5"/>
+    </linearGradient>
+  </defs>
+  <rect x="64" y="64" width="896" height="896" rx="204" fill="url(#plate)" stroke="#dce5f4" stroke-width="2"/>
+  <rect x="226" y="244" width="492" height="368" rx="64" fill="#e3def4" stroke="#c7bce5" stroke-width="3"/>
+  <rect x="266" y="326" width="492" height="368" rx="64" fill="#dce7f8" stroke="#becfeb" stroke-width="3"/>
+  <rect x="306" y="408" width="492" height="368" rx="64" fill="url(#gateway)"/>
+  <g fill="none" stroke="#f8fbff" stroke-width="38" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m492 518-74 74 74 74"/>
+    <path d="m612 518 74 74-74 74"/>
+  </g>
+</svg>
