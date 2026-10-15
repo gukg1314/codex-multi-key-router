@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Export shipped icons from the three approved, frozen PNG masters.
+"""Export shipped icons from the approved, frozen PNG masters.
 
-``packaging/assets/app-icon.png`` is the 1024 px main icon. The macOS
-iconset, Windows application/tray icons and UI logo only resize this master.
+``packaging/assets/app-icon.png`` is the shared 1024 px main icon for Windows
+application/tray icons and the UI logo. The macOS iconset resizes the frozen
+``app-icon-macos.png`` variant with the system-compatible alpha profile.
 The independent 18/36 px white statusbar-source PNGs only change RGB to black,
 keeping every alpha value for AppKit template rendering. No export redraws,
 crops, adds a plate or derives the status bar mark from the main icon.
@@ -26,6 +27,7 @@ LAUNCHER_ASSETS = PROJECT_ROOT / "launcher" / "assets"
 UI_DIR = PROJECT_ROOT / "ui"
 
 SOURCE_IMAGE = ASSETS_DIR / "app-icon.png"
+MACOS_SOURCE_IMAGE = ASSETS_DIR / "app-icon-macos.png"
 STATUS_SOURCE_PNG = ASSETS_DIR / "statusbar-source.png"
 STATUS_SOURCE_PNG_2X = ASSETS_DIR / "statusbar-source@2x.png"
 APP_ICO = ASSETS_DIR / "app.ico"
@@ -391,6 +393,7 @@ def ensure_assets(force: bool = False) -> dict[str, Path]:
             log_line(f"状态栏模板已导出 source={source.name} px={size}x{size} target={target.name} alpha=原样保留")
     return {
         "source": SOURCE_IMAGE,
+        "macos_source": MACOS_SOURCE_IMAGE,
         "app_ico": APP_ICO,
         "tray_ico": TRAY_ICO,
         "status_png": STATUS_PNG,

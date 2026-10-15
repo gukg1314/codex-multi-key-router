@@ -303,32 +303,6 @@ static void codexmk_install_status_item(NSString *openLabel, NSString *quitLabel
     codexmk_log("menu bar item installed");
 }
 
-// The Dock tile follows the bundle icon, but a freshly built unsigned bundle can
-// still show the generic blank tile while the icon cache is cold. Setting the
-// image explicitly makes the Dock and the app switcher show the real icon.
-static void codexmk_install_dock_icon(void) {
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"AppIcon" ofType:@"icns"];
-    if (path == nil) {
-        NSString *executable = [[NSProcessInfo processInfo] arguments][0];
-        NSString *candidate = [[executable stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"AppIcon.icns"];
-        if ([[NSFileManager defaultManager] fileExistsAtPath:candidate]) {
-            path = candidate;
-        }
-    }
-    if (path == nil) {
-        codexmk_log("dock icon skipped; AppIcon.icns is not next to the launcher");
-        return;
-    }
-    NSImage *icon = [[NSImage alloc] initWithContentsOfFile:path];
-    if (icon == nil) {
-        codexmk_log("dock icon skipped; AppIcon.icns could not be decoded");
-        return;
-    }
-    [NSApp setApplicationIconImage:icon];
-    [icon release];
-    codexmk_log("dock icon set from AppIcon.icns");
-}
-
 static void codexmk_run(const char *url_utf8, const char *title_utf8, const char *open_utf8, const char *quit_utf8, int silent, int hide_dock) {
     @autoreleasepool {
         NSString *target = [NSString stringWithUTF8String:(url_utf8 != NULL ? url_utf8 : "")];
@@ -339,6 +313,8 @@ static void codexmk_run(const char *url_utf8, const char *title_utf8, const char
         codexmk_log("window creating");
 
         [NSApplication sharedApplication];
+        // 不覆盖运行时图标，应用列表与 Dock 的启动、运行、退出共用系统渲染。
+        codexmk_log("Dock 图标统一使用应用包 AppIcon.icns，不执行运行时覆盖");
         codexmk_apply_dock_visibility(hide_dock != 0);
         codexmk_log(hide_dock ? "startup Dock hidden" : "startup Dock visible");
 
@@ -347,7 +323,6 @@ static void codexmk_run(const char *url_utf8, const char *title_utf8, const char
         }
         [NSApp setDelegate:gDelegate];
         codexmk_install_menu();
-        codexmk_install_dock_icon();
         codexmk_install_status_item(openLabel, quitLabel);
 
         // Keep in sync with windowWidth / windowHeight in main.go.

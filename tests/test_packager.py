@@ -114,6 +114,22 @@ class PackagerTests(unittest.TestCase):
         )
         self.assertEqual(max(size for _, size in icons.ICONSET_PLAN), 1024)
 
+    def test_macos_bundle_exports_the_platform_icon_instead_of_the_shared_master(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(build_macos, "log_line"), \
+                mock.patch.object(icons, "write_iconset") as write_iconset, \
+                mock.patch.object(icons, "build_icns"):
+            root = Path(tmp)
+            icon = build_macos.install_bundle_icons(
+                root / "Contents", root / "ui",
+                {"source": icons.SOURCE_IMAGE, "macos_source": icons.MACOS_SOURCE_IMAGE},
+            )
+            exported = write_iconset.call_args.args[0].source
+            platform_master = icons.read_png(icons.MACOS_SOURCE_IMAGE)
+            self.assertEqual(icon, "AppIcon")
+            self.assertEqual(exported.pixels, platform_master.pixels)
+            self.assertNotEqual(exported.pixels, icons.read_png(icons.SOURCE_IMAGE).pixels)
+            self.assertEqual(write_iconset.call_args.kwargs["source"], icons.MACOS_SOURCE_IMAGE)
+
     def test_shipped_icons_match_the_expected_sizes(self):
         def ico_sizes(path):
             data = path.read_bytes()

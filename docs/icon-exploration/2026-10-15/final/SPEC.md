@@ -9,6 +9,7 @@
 | 用途 | 冻结文件 | 规格 |
 | --- | --- | --- |
 | 主图母版 | `packaging/assets/app-icon.png` | 1024×1024，sRGB，RGBA8，真实透明外缘 |
+| macOS 兼容母版 | `packaging/assets/app-icon-macos.png` | 1024×1024；透明轮廓边界 (100,100)…(924,924)，避免系统二次缩小与套底板 |
 | 主图原始参考 | `docs/icon-exploration/2026-10-15/statusbar/reference-main-a.png` | 用户最后选择的原图，1254×1254 |
 | 固定 Alpha 蒙版 | `docs/icon-exploration/2026-10-15/final/app-icon-alpha-mask.svg` | 1254×1254；路径边界 x=84…1170、y=102…1154 |
 | 清理后的原尺寸图 | `docs/icon-exploration/2026-10-15/final/app-icon-cleaned-source.png` | 保留原 RGB，只将原 Alpha 与固定路径覆盖率相乘 |
@@ -28,12 +29,14 @@
 | `packaging/assets/app.ico` | 主图等比缩放；16/24/32/48/64/128/256px，32 位 ARGB；Windows EXE/安装器已有引用 |
 | `launcher/assets/tray.ico` | 主图等比缩放；16/32/48px；沿用现有 Windows 托盘入口 |
 | `ui/logo.png` | 主图等比缩放；60×60px；侧栏与 favicon 共用 |
-| macOS `AppIcon.icns` | 构建时从主图生成标准 iconset 共 10 槽位，16…1024px；Finder/Dock 共用；1024px 槽位像素保持不变 |
+| macOS `AppIcon.icns` | 构建时从 macOS 兼容母版生成标准 iconset 共 10 槽位，16…1024px；Finder/Dock 共用；1024px 槽位像素保持不变 |
 | `launcher/assets/statusbar.png`、`statusbar@2x.png` | 两份白色母版仅转换 RGB 为黑色，逐像素保留 Alpha；不缩放、不阈值抠图 |
 
 主图和状态栏来源分离，删除旧根目录图片回退及自动补底、裁切、824 比例重排。母版缺失、尺寸错误或状态栏可见像素非纯白时明确中止，避免误用旧资源。日志记录文件名、尺寸与处理步骤，不记录个人绝对路径。
 
 AppKit 显式加载 18/36px 两个 `NSBitmapImageRep`，各自与 `NSImage` 都固定 18×18pt，并设置 `isTemplate=true`。资源缺失或解码失败记录日志并返回空图像，不自动换成彩色主图；菜单安装代码仍会执行。
+
+macOS 图标实际显示偏小与打开/退出切换的问题已在后续修复：使用独立的系统兼容母版，并移除运行时 `setApplicationIconImage:` 覆盖；详见 `../macos-render-fix/README.md`。共享主图、Windows、界面 logo 与状态栏资源保持不变。
 
 ## 验证
 
@@ -47,6 +50,7 @@ AppKit 显式加载 18/36px 两个 `NSBitmapImageRep`，各自与 `NSImage` 都�
 
 ```text
 50350bda885a1e844e20fff6f8920ea29e68274e149f3c062b0c3946fef6a7b9  packaging/assets/app-icon.png
+a5c2256c2b12943f98635ad221f775926ffb80ca77bf8a14fc61d41c646d7a39  packaging/assets/app-icon-macos.png
 896461923a0af3e43b9b37b0e243499e188412185b7f1585de88401af03daea7  packaging/assets/statusbar-source.png
 cc83637aa297862ef7375bee13770a6a2b2b3e9b1ba30897664a06cf8bdfcf8d  packaging/assets/statusbar-source@2x.png
 9880a03753704105c362cc5f7592119d82f0ccf49e91d27f412e5a3432445dfd  docs/icon-exploration/2026-10-15/statusbar/statusbar-master.svg

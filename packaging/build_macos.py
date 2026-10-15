@@ -135,10 +135,9 @@ def install_bundle_icons(contents: Path, ui_target: Path, assets: dict[str, Path
     logo = assets.get("ui_logo")
     if logo and logo.is_file():
         shutil.copy2(logo, ui_target / "logo.png")
-    source = assets.get("source")
+    source = assets.get("macos_source")
     if not source or not source.is_file():
-        log_line("app icon skipped: no source image")
-        return None
+        raise SystemExit("macOS icon master missing; refusing to build with a fallback icon")
     try:
         import icons
 
