@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-CN" data-ui-style="layered" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Codex 路由 · 皮肤候选</title>
+<script>
+const PREVIEW_SKINS={soft:'01 Soft UI Evolution',bento:'02 Bento Box Grid',chaos:'03 Gen Z Chaos / Maximalism',motion:'04 Motion-Driven',mintlify:'05 Mintlify'};
+const requestedSkin=new URLSearchParams(location.search).get('skin');
+const skin=Object.prototype.hasOwnProperty.call(PREVIEW_SKINS,requestedSkin)?requestedSkin:'soft';
+document.documentElement.setAttribute('data-preview-skin',skin);
+document.title='Codex 路由 · '+PREVIEW_SKINS[skin];
+</script>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="skins.css">
+</head>
+<body>
+
+<a class="skip" href="#page">跳到工作区</a>
+<div class="app" id="app">
+  <header class="masthead">
+    <div class="heading-brand"><h1 class="brand"><svg class="style-mark" viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M6 5v12a5 5 0 0 0 5 5h11M6 11h11a5 5 0 0 0 5-5" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><circle cx="6" cy="5" r="3" fill="currentColor"/><circle cx="22" cy="5" r="3" fill="currentColor"/><circle cx="22" cy="22" r="3" fill="currentColor"/></svg><span class="wordmark">Codex</span><span>路由</span></h1><h2 class="page-title" id="title">概览</h2><p class="page-description">模型来自哪里，一眼看清。</p></div>
+    <span class="sr-only" id="brand-sub"></span>
+    <div class="identity"><span class="running-state" id="running-status">连接中</span><span id="top-pill" class="pill">读取状态…</span></div>
+    <div class="masthead-counts" id="masthead-counts"></div>
+  </header>
+  <main class="body" id="page" aria-labelledby="title"></main>
+  <footer class="navigation-band"><svg class="rail-mark" viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M6 5v12a5 5 0 0 0 5 5h11M6 11h11a5 5 0 0 0 5-5" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><circle cx="6" cy="5" r="3" fill="currentColor"/><circle cx="22" cy="5" r="3" fill="currentColor"/><circle cx="22" cy="22" r="3" fill="currentColor"/></svg><nav class="nav" id="nav" aria-label="主导航"></nav><div class="rail-local">本地服务<br><span id="rail-version"></span></div><div class="foot" id="foot"></div></footer>
+</div>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const NAV=[['overview','概览'],['keys','Key 与模型'],['priority','路由优先级'],['settings','设置']];
+const TITLE={overview:'概览',keys:'Key 与模型',priority:'路由优先级',settings:'设置'};
+const ICONS={
+  overview:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  key:'<circle cx="15" cy="8" r="5"/><path d="m11 12-8 8v-4h4v-4h4"/>',
+  route:'<path d="M4 4v10a6 6 0 0 0 6 6h10M4 10h9a5 5 0 0 0 5-5V3m-4 4 4-4 4 4m-6 9 4 4-4 4"/>',
+  settings:'<path d="m9 3 1-2h4l1 2 3 2 2 .2 2 3-1 2v3l1 2-2 3-2 .2-3 2-1 2h-4l-1-2-3-2-2-.2-2-3 1-2v-3l-1-2 2-3L6 5z"/><circle cx="12" cy="12" r="3"/>',
+  models:'<path d="m12 3 9 5-9 5-9-5zM3 12l9 5 9-5M3 16l9 5 9-5"/>',
+  cloud:'<path d="M7 18H6a4 4 0 0 1-1-8 7 7 0 0 1 13-2 5 5 0 0 1 0 10h-1m-8-4 3 3 5-5"/>',
+  refresh:'<path d="M20 8a8 8 0 1 0 0 8M20 3v5h-5"/>',
+  power:'<path d="M12 2v10M6 5a9 9 0 1 0 12 0"/>',
+  stop:'<rect x="5" y="5" width="14" height="14" rx="2"/>',
+  direct:'<path d="M4 17v-4a5 5 0 0 1 5-5h11m-5-5 5 5-5 5"/>',
+  plus:'<path d="M12 4v16M4 12h16"/>',
+  edit:'<path d="m16 3 5 5-13 13H3v-5zM13 6l5 5"/>',
+  trash:'<path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/>',
+  save:'<path d="M20 21H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h13l4 4v13a1 1 0 0 1-1 1zM7 3v6h9V3M7 21v-8h10v8"/>',
+  folder:'<path d="M3 7V4h6l3 3h9v13H3z"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 1v2M12 21v2M1 12h2M21 12h2M4 4l2 2M18 18l2 2M4 20l2-2M18 6l2-2"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7v.1"/>',
+};
+function icon(name){return `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ICONS[name]}</svg>`;}
+function iconTile(name){return `<span class="section-icon">${icon(name)}</span>`;}
+
+const STATE={"app_version": "1.2.26", "platform": "macos", "taken_over": true, "keys": [{"id": "preview-main", "name": "主力 Key", "included_count": 7, "enabled": true, "has_key": true}, {"id": "preview-backup", "name": "备用 Key", "included_count": 3, "enabled": true, "has_key": true}, {"id": "preview-test", "name": "测试 Key", "included_count": 0, "enabled": false, "has_key": true}], "models": [{"slug": "gpt-6.1-sol", "source": "preview-main", "wire_api": "responses"}, {"slug": "gpt-6-astra", "source": "preview-main", "wire_api": "responses"}, {"slug": "gpt-6-luna", "source": "preview-main", "wire_api": "responses"}, {"slug": "claude-sonnet-5.5", "source": "preview-main", "wire_api": "chat"}, {"slug": "deepseek-v4.1", "source": "preview-main", "wire_api": "chat"}, {"slug": "glm-5.3-flash", "source": "preview-main", "wire_api": "chat"}, {"slug": "kimi-k3", "source": "preview-main", "wire_api": "chat"}, {"slug": "gpt-6.1-sol", "source": "preview-backup", "wire_api": "responses"}, {"slug": "gpt-6-astra", "source": "preview-backup", "wire_api": "responses"}, {"slug": "gpt-6-luna", "source": "preview-backup", "wire_api": "responses"}], "official": {"count": 12, "logged_in": true}, "conflicts": [{}, {}, {}], "router": {"running": true}, "task": {"status": "done"}};
+let PAGE='overview',NAV_PAGE=null;
+const OVERVIEW_SOURCE='preview-main',SELECTED_KEY='preview-main',BUSY=false;
+function esc(value){return String(value==null?'':value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function appVersionText(state){return state&&state.app_version?'v'+String(state.app_version):'版本未知';}
+function nav(){
+  // 轮询只更新状态，保留导航按钮节点和键盘焦点。
+  document.getElementById('app').setAttribute('data-page',PAGE);
+  if(NAV_PAGE===PAGE)return;
+  document.getElementById('nav').innerHTML=NAV.map(([k,t])=>`<button type="button" id="nav-${k}" class="${k===PAGE?'on':''}" data-nav="${k}" aria-label="${esc(t)}" title="${esc(t)}" ${k===PAGE?'aria-current="page"':''}>${icon({overview:"overview",keys:"key",priority:"route",settings:"settings"}[k]).replace('class="icon"','class="nav-icon"')}<span class="nav-label">${esc(t)}</span></button>`).join('');
+  document.getElementById('title').textContent=TITLE[PAGE];
+  NAV_PAGE=PAGE;
+}
+function foot(){
+  document.getElementById('foot').textContent=PAGE==='overview'?'选择来源查看模型':'Codex 路由 · '+TITLE[PAGE];
+  document.getElementById('rail-version').textContent=appVersionText(STATE);
+  const counts=document.getElementById('masthead-counts');
+  if(!STATE){
+    counts.innerHTML=['Key 模型','已配置 Key','官方模型','同名模型'].map(label=>`<div><strong>—</strong><span>${label}</span></div>`).join('');
+    return;
+  }
+  const running=document.getElementById('running-status');
+  running.className='running-state'+(STATE.router.running?'':' off');
+  running.textContent=STATE.router.running?'运行中':'已停止';
+  document.getElementById('brand-sub').textContent=appVersionText(STATE)+' · '+(STATE.platform==='windows'?'Windows':'macOS');
+  document.getElementById('top-pill').textContent=STATE.taken_over?'已接管 Codex':'官方直连';
+  counts.innerHTML=[[STATE.models.length,'Key 模型'],[STATE.keys.length,'已配置 Key'],[STATE.official.count,'官方模型'],[STATE.conflicts.length,'同名模型']].map(([value,label])=>`<div><strong>${value}</strong><span>${label}</span></div>`).join('');
+}
+function toastTask(){
+  const task=STATE&&STATE.task;
+  if(!task)return '';
+  if(task.status==='running')return `<span class="spin"></span> ${esc(taskKind(task.kind))}中…`;
+  if(task.status==='error')return `<span class="tag err">上次失败</span>`;
+  return '';
+}
+function sourceListHtml(overview){
+  const s=STATE;
+  const selected=overview?OVERVIEW_SOURCE:SELECTED_KEY===null?'official':SELECTED_KEY;
+  const sources=[{id:'official',name:'官方账号',count:s.official.count,state:s.official.logged_in?'已登录':'未检测到登录'},...s.keys.map(k=>({id:k.id,name:k.name,count:k.included_count,state:!k.enabled?'已停用':k.has_key?'已配置':'缺密钥'}))];
+  return sources.map(source=>{
+    const action=overview?'select-overview-source':source.id==='official'?'select-official':'select-key';
+    const attr=overview?`data-source="${esc(source.id)}"`:source.id==='official'?'':`data-id="${esc(source.id)}"`;
+    return `<button type="button" id="${overview?'overview':'key'}-source-${esc(source.id)}" class="${overview?'overview-source':'keyitem'} ${selected===source.id?'on':''}" data-action="${action}" ${attr} aria-pressed="${selected===source.id}"><span class="source-icon">${icon(source.id==='official'?'cloud':'key')}</span><span class="source-copy"><span class="name">${esc(source.name)}</span><span class="meta">${esc(source.state)}</span></span><span class="source-number" aria-label="${source.count} 个模型">${source.count}</span></button>`;
+  }).join('');
+}
+function pageOverview(){
+  const s=STATE;
+  const key=s.keys.find(k=>k.id===OVERVIEW_SOURCE);
+  const official=!key;
+  const models=official?(s.official.models||[]):s.models.filter(m=>m.source===key.id);
+  const status=official?(s.official.logged_in?'已登录':'未检测到登录'):!key.enabled?'已停用':key.has_key?'已配置':'缺密钥';
+  const direct='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 12h18m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.5"/></svg>';
+  const bridge='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 8h15l-4-4m7 12H6l4 4M18 8l-4 4M6 16l4-4" stroke="currentColor" stroke-width="1.5"/></svg>';
+  const rows=models.map(m=>{
+    const chat=!official&&m.wire_api!=='responses';
+    return `<li class="model ${chat?'bridge':''}"><span class="model-name">${esc(m.slug)}</span><span class="wire">${chat?bridge:direct}${official?'官方直连':wireLabel(m)}</span><span class="model-symbol">${icon('models')}</span></li>`;
+  }).join('');
+  return `<div class="overview overview-sources"><div class="sources-layout">
+    <section class="source-models" aria-label="当前来源模型">
+      <header class="source-heading"><h2>${official?'官方账号':esc(key.name)}<small>${status}</small></h2><span class="total">${models.length} 个模型</span></header>
+      <div class="catalog-columns" aria-hidden="true"><span>模型</span><span>接入方式</span></div>
+      <div class="scroll overview-model-table" id="overview-model-table"><ul class="model-list">${rows||`<li class="empty">${official?'前往“Key 与模型”拉取官方模型':'点击“刷新模型”接入模型'}</li>`}</ul></div>
+      <p class="catalog-note"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 7h8v7H4zM5 7V4a3 3 0 0 1 6 0v3" stroke="currentColor" stroke-width="1.2"/></svg>固定来源，失败不自动切换</p>
+    </section>
+    <aside class="sources-column" aria-label="来源与服务">
+      <section class="source-index"><div class="sources-title"><h2>模型来源</h2><span class="dock-current">当前查看：${official?'官方账号':esc(key.name)}</span></div><div class="source-list scroll" id="overview-source-list">${sourceListHtml(true)}</div></section>
+      <section class="overview-service"><header class="service-heading"><h2>路由服务</h2><span>本地服务</span></header>
+        <div class="service-status"><span class="running-state ${s.router.running?'':'off'}">${s.router.running?'运行中':'已停止'}</span><span>${s.taken_over?'已接管 Codex':'官方直连'}</span></div>
+        <div class="actionbar">
+          <button class="btn primary" id="action-refresh" data-action="refresh" ${BUSY?'disabled':''}>${icon('refresh')}刷新模型</button>
+          <button class="btn" id="action-start" data-action="start" ${BUSY||(s.router.running&&s.taken_over)?'disabled':''}>启用路由</button>
+          <button class="btn" id="action-stop" data-action="stop" ${BUSY?'disabled':''}>停止路由</button>
+          <button class="btn" id="action-direct" data-action="direct" ${BUSY?'disabled':''}>切回官方</button>
+        </div><p class="source-note">模型目录刷新后生效。</p><div class="task-feedback" role="status">${toastTask()}</div>
+        <div class="overview-version"><span>${esc(appVersionText(s))}</span><span>概览</span></div>
+      </section>
+    </aside>
+  </div></div>`;
+}
+function wireLabel(model){
+  return model&&model.wire_api==='responses'?'原生直通':'Chat 桥接';
+}
+nav();foot();
+document.getElementById('page').innerHTML=pageOverview();
+// 小样只呈现真实默认排版；不注册业务事件，也不发出网络请求。
+console.info('皮肤候选已载入 candidate='+skin+' layout=layered viewport=1180x820 data=fictional backend=disconnected');
+
+</script>
+</body>
+</html>

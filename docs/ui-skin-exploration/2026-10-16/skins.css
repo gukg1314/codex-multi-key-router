@@ -1,0 +1,92 @@
+/* 五个独立候选只改皮肤；几何、字体与内容全部继承默认主题。 */
+html[data-ui-style="layered"][data-preview-skin]{
+  --accent-ink:#fff;--selected-ink:#fff;--accent-faint:#fff;
+  --skin-panel-radius:18px;--skin-button-radius:8px;--skin-item-radius:10px;
+  --skin-panel-filter:none;--skin-nav-shadow:none;--skin-button-shadow:none;
+}
+html[data-ui-style="layered"][data-preview-skin] .app{background:var(--skin-canvas)}
+html[data-ui-style="layered"][data-preview-skin] .navigation-band{background:var(--skin-rail);border-color:var(--skin-rail-border)}
+html[data-ui-style="layered"][data-preview-skin] :is(.source-models,.overview-service,.split>.card,.settings .card,.priority-panel,.source-index){background:var(--panel);border-color:var(--skin-panel-border);border-radius:var(--skin-panel-radius);box-shadow:var(--skin-panel-shadow);backdrop-filter:var(--skin-panel-filter);-webkit-backdrop-filter:var(--skin-panel-filter)}
+html[data-ui-style="layered"][data-preview-skin] .nav button.on{background:var(--skin-nav-selected);color:var(--skin-nav-ink);box-shadow:var(--skin-nav-shadow)}
+html[data-ui-style="layered"][data-preview-skin] :is(.overview-source,.keyitem){border-radius:var(--skin-item-radius)}
+html[data-ui-style="layered"][data-preview-skin] :is(.overview-source.on,.keyitem.on){background:var(--selected);border-color:var(--selected);color:var(--selected-ink)}
+html[data-ui-style="layered"][data-preview-skin] :is(.overview-source.on,.keyitem.on) .meta{color:var(--selected-ink)}
+html[data-ui-style="layered"][data-preview-skin] .btn{border-radius:var(--skin-button-radius)}
+html[data-ui-style="layered"][data-preview-skin] .btn.primary{box-shadow:var(--skin-button-shadow)}
+
+/* 01 / G01 / Soft UI Evolution：粉蓝和浅紫，柔和但可辨的浮起层次。 */
+html[data-ui-style="layered"][data-preview-skin="soft"]{
+  --bg:#edf1f8;--panel:#f9fbff;--input-bg:#f2f5fc;--text:#26324b;--muted:#56647e;--border:#d6dfed;
+  --accent:#5266c7;--selected:#5d6bc0;--primary-hover:#4254ae;--hover:#e6ecfc;
+  --protocol-bg:#e3edfb;--bridge-bg:#eee6fa;--bridge-ink:#70549a;--ok:#34765c;--warn:#89601f;--err:#b43d53;
+  --disabled-text:#79859b;--disabled-border:#d6dfed;--mask:#18233c66;
+  --skin-canvas:radial-gradient(ellipse at 95% 3%,#e4dcf5 0,transparent 48%),radial-gradient(ellipse at 35% 96%,#dcebf7 0,transparent 52%),var(--bg);
+  --skin-rail:#f4f7fd;--skin-rail-border:#dce4f1;--skin-panel-border:#fff;
+  --skin-panel-shadow:8px 10px 24px #a7b5d12b,-6px -6px 18px #ffffffc7,inset 0 1px 0 #fff;
+  --skin-nav-selected:#fff;--skin-nav-ink:#5266c7;--skin-nav-shadow:0 5px 12px #9baad52e;
+  --skin-button-radius:10px;--skin-button-shadow:0 3px 7px #5266c72b,inset 0 1px 0 #ffffff30;
+}
+html[data-ui-style="layered"][data-preview-skin="soft"] :is(.overview-source,.keyitem){box-shadow:inset 0 1px 0 #ffffffa6}
+
+/* 02 / G02 / Bento Box Grid：中性模块、石墨选中态、克制的蓝色操作。 */
+html[data-ui-style="layered"][data-preview-skin="bento"]{
+  --bg:#f3f4f6;--panel:#fff;--input-bg:#f8f9fb;--text:#20242b;--muted:#5b636f;--border:#dfe3e8;
+  --accent:#0969d8;--selected:#252b36;--primary-hover:#0758b6;--hover:#edf2f8;
+  --protocol-bg:#edf3fc;--bridge-bg:#f1eef8;--bridge-ink:#705393;--ok:#28734f;--warn:#91620d;--err:#b93745;
+  --disabled-text:#8a929d;--disabled-border:#e0e4e9;--mask:#171d295c;
+  --skin-canvas:var(--bg);--skin-rail:#fafbfc;--skin-rail-border:#e0e4e9;--skin-panel-border:#e4e7ec;
+  --skin-panel-radius:16px;--skin-panel-shadow:0 2px 3px #19202b03,0 9px 24px #19202b06;
+  --skin-nav-selected:#252b36;--skin-nav-ink:#fff;--skin-nav-shadow:0 3px 8px #19202b1a;
+  --skin-button-shadow:0 2px 3px #0969d819;
+}
+
+/* 03 / G03 / Gen Z Chaos：撞色、黑色硬阴影；没有贴纸或随机排版。 */
+html[data-ui-style="layered"][data-preview-skin="chaos"]{
+  --bg:#fffcdf;--panel:#fffef4;--input-bg:#fff;--text:#151515;--muted:#535044;--border:#181818;
+  --accent:#1735df;--selected:#e6007e;--primary-hover:#1026b6;--hover:#fff18a;
+  --protocol-bg:#c7f7ff;--bridge-bg:#ffd6ef;--bridge-ink:#8a0751;--ok:#326122;--warn:#835500;--err:#bb1740;
+  --disabled-text:#73705e;--disabled-border:#aaa68b;--mask:#18181866;
+  --skin-canvas:var(--bg);--skin-rail:#f0ff68;--skin-rail-border:#181818;--skin-panel-border:#181818;
+  --skin-panel-radius:6px;--skin-button-radius:4px;--skin-item-radius:4px;
+  --skin-panel-shadow:4px 4px 0 #181818;--skin-nav-selected:#1735df;--skin-nav-ink:#fff;
+  --skin-nav-shadow:3px 3px 0 #181818;--skin-button-shadow:2px 2px 0 #181818;
+}
+html[data-ui-style="layered"][data-preview-skin="chaos"] .overview-service{background:#fff18a}
+html[data-ui-style="layered"][data-preview-skin="chaos"] .source-index{background:#fff}
+
+/* 04 / G04 / Motion-Driven：流动光色，仅在悬停时改变色彩和阴影。 */
+html[data-ui-style="layered"][data-preview-skin="motion"]{
+  --bg:#edf0ff;--panel:#fffffff0;--input-bg:#f7f8ff;--text:#192347;--muted:#526082;--border:#d6dcf2;
+  --accent:#4c42c8;--selected:#403696;--primary-hover:#3b30a8;--hover:#e7e9ff;
+  --protocol-bg:#e4f2ff;--bridge-bg:#eee5ff;--bridge-ink:#6b42a4;--ok:#286951;--warn:#846019;--err:#b3335b;
+  --disabled-text:#7781a0;--disabled-border:#d6dcf2;--mask:#10172b66;
+  --skin-canvas:radial-gradient(ellipse at 95% 3%,#c6b0ff 0,transparent 45%),radial-gradient(ellipse at 35% 96%,#98d5ed 0,transparent 50%),var(--bg);
+  --skin-rail:#151d40;--skin-rail-border:#303960;--skin-panel-border:#ffffffdd;
+  --skin-panel-shadow:0 12px 32px #333b7b12,inset 0 1px 0 #fff;
+  --skin-nav-selected:#ffffff16;--skin-nav-ink:#fff;--skin-nav-shadow:inset 0 0 0 1px #b1b9ff38,0 0 20px #8b8bff18;
+  --skin-button-shadow:0 5px 14px #4d43c72e,inset 0 1px 0 #ffffff40;
+}
+html[data-ui-style="layered"][data-preview-skin="motion"] :is(.rail-mark,.nav button,.rail-local){color:#b9c7ed}
+html[data-ui-style="layered"][data-preview-skin="motion"] .nav button:hover{color:#fff;background:#ffffff20}
+html[data-ui-style="layered"][data-preview-skin="motion"] .btn.primary{background:linear-gradient(115deg,#3155cf,#7440c8);border-color:#5147c7}
+html[data-ui-style="layered"][data-preview-skin="motion"] .btn.primary:hover{background:linear-gradient(115deg,#2547bd,#6030b7);box-shadow:0 6px 20px #4d43c74d}
+html[data-ui-style="layered"][data-preview-skin="motion"] :is(.btn,.nav button,.overview-source){transition:background-color 320ms ease,border-color 320ms ease,box-shadow 320ms ease}
+html[data-ui-style="layered"][data-preview-skin="motion"] .overview-source:hover{box-shadow:0 0 0 2px #7166d42b}
+
+/* 05 / G05 / Mintlify：白底、薄边线、薄荷绿状态和胶囊操作。 */
+html[data-ui-style="layered"][data-preview-skin="mintlify"]{
+  --bg:#fff;--panel:#fff;--input-bg:#fff;--text:#0d0d0d;--muted:#666;--border:#e5e5e5;
+  --accent:#0d0d0d;--selected:#d4fae8;--selected-ink:#0b6544;--primary-hover:#333;--hover:#effbf5;
+  --protocol-bg:#eff8f3;--bridge-bg:#f3f5f8;--bridge-ink:#4b6079;--ok:#087a51;--warn:#94600c;--err:#b84141;
+  --disabled-text:#888;--disabled-border:#e5e5e5;--mask:#0d0d0d55;--focus:#0fa76e;
+  --skin-canvas:radial-gradient(ellipse at 95% 3%,#d4fae880 0,transparent 45%),var(--bg);
+  --skin-rail:#ffffffdb;--skin-rail-border:#e9eeeb;--skin-panel-border:#0000000d;
+  --skin-panel-radius:16px;--skin-panel-shadow:0 2px 4px #00000008;
+  --skin-nav-selected:#d4fae8;--skin-nav-ink:#0b6544;--skin-button-radius:9999px;
+  --skin-button-shadow:0 1px 2px #0000000f;
+}
+html[data-ui-style="layered"][data-preview-skin="mintlify"] .rail-mark{color:#0fa76e}
+html[data-ui-style="layered"][data-preview-skin="mintlify"] .nav button:hover{color:#0b6544}
+html[data-ui-style="layered"][data-preview-skin="mintlify"] .wire{color:#0b6544}
+html[data-ui-style="layered"][data-preview-skin="mintlify"] .model.bridge .wire{color:var(--bridge-ink)}
+@media(prefers-reduced-motion:reduce){html[data-ui-style="layered"][data-preview-skin="motion"] :is(.btn,.nav button,.overview-source){transition:none}}
