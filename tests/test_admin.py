@@ -420,14 +420,17 @@ class AdminServiceTests(unittest.TestCase):
             self.service.update_settings({"theme": "blue"})
         self.assertEqual(ctx.exception.code, "bad_theme")
 
-    def test_settings_ui_style_defaults_to_lexicon_and_persists_with_each_theme(self):
-        self.assertEqual(self.service.settings_view()["ui_style"], "lexicon")
-        self.p["settings"].write_text(json.dumps({"previous_model": "gpt-5.1", "ui_style": "old"}), encoding="utf-8")
-        self.assertEqual(self.service.settings_view()["ui_style"], "lexicon")
+    def test_settings_ui_style_defaults_to_layered_and_persists_with_each_theme(self):
+        self.assertEqual(self.service.settings_view()["ui_style"], "layered")
+        for legacy_style in ("index", "lexicon", "old"):
+            self.p["settings"].write_text(
+                json.dumps({"previous_model": "gpt-5.1", "ui_style": legacy_style}), encoding="utf-8"
+            )
+            self.assertEqual(self.service.settings_view()["ui_style"], "layered")
         with mock.patch.object(self.service.router, "ensure_running") as start, mock.patch.object(
             self.service.router, "stop"
         ) as stop, mock.patch.object(toolctl, "_restart_chatgpt") as restart:
-            for style in ("layered", "index", "lexicon"):
+            for style in ("layered", "chaos", "mintlify"):
                 for theme in ("light", "dark"):
                     with self.subTest(style=style, theme=theme):
                         self.service.update_settings({"theme": theme})
@@ -445,7 +448,7 @@ class AdminServiceTests(unittest.TestCase):
 
     def test_settings_ui_style_rejects_invalid_values_before_other_changes(self):
         with mock.patch.object(self.service.autostart, "enable") as enable:
-            for value in ("blue", "", None, True, {}, []):
+            for value in ("blue", "", None, True, {}, [], "index", "lexicon"):
                 with self.subTest(value=value), self.assertRaises(admin.ApiError) as ctx:
                     self.service.update_settings({"autostart": True, "theme": "dark", "ui_style": value})
                 self.assertEqual(ctx.exception.code, "bad_ui_style")

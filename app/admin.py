@@ -44,7 +44,7 @@ APP_VERSION = "1.2.26"
 VERSION = "6"
 ADMIN_HOST = "127.0.0.1"
 ADMIN_PORT = 8791
-UI_STYLES = ("layered", "index", "lexicon")
+UI_STYLES = ("layered", "chaos", "mintlify")
 ROUTER_PORT = 8790
 MAX_BODY = 1024 * 1024
 KEY_PATH = re.compile(r"^/api/keys/([A-Za-z0-9_-]{1,32})(?:/(discover|test|models))?$")
@@ -713,7 +713,7 @@ class AdminService:
         return {
             "admin_port": int(raw.get("admin_port") or ADMIN_PORT),
             "theme": raw.get("theme") if raw.get("theme") in ("light", "dark") else "light",
-            "ui_style": raw.get("ui_style") if raw.get("ui_style") in UI_STYLES else "lexicon",
+            "ui_style": raw.get("ui_style") if raw.get("ui_style") in UI_STYLES else "layered",
             "hide_dock_icon": not toolctl.is_windows() and raw.get("hide_dock_icon") is not False,
             "router_port": ROUTER_PORT,
             "router_enabled": self.router_expected(),
@@ -1068,7 +1068,7 @@ class AdminService:
     def update_settings(self, body: dict) -> dict:
         if "ui_style" in body and body["ui_style"] not in UI_STYLES:
             log.warning("界面风格保存被拒绝：风格值不在允许范围内")
-            raise ApiError("ui_style must be layered, index or lexicon", 400, "bad_ui_style")
+            raise ApiError("ui_style must be layered, chaos or mintlify", 400, "bad_ui_style")
         if "hide_dock_icon" in body:
             if toolctl.is_windows():
                 raise ApiError("hide_dock_icon is only available on macOS", 400, "macos_only")
