@@ -1432,6 +1432,14 @@ def _nonstream_bridge(
     obj = json.loads(payload or b"{}")
     choice = (obj.get("choices") or [{}])[0] if isinstance(obj, dict) else {}
     message = choice.get("message") or {}
+    tool_calls = message.get("tool_calls")
+    if isinstance(tool_calls, list) and tool_calls:
+        # 完整调用按数组位置编号，避免被流式解析器当成同一条调用的分片拼接。
+        message["tool_calls"] = [
+            {**call, "index": index} if isinstance(call, dict) else call
+            for index, call in enumerate(tool_calls)
+        ]
+        log.info("非流式工具调用已独立编号 model=%s count=%d", model, len(tool_calls))
     frame = {
         "choices": [{"delta": message, "finish_reason": choice.get("finish_reason")}],
         "usage": obj.get("usage") if isinstance(obj, dict) else {},

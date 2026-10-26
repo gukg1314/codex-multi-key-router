@@ -581,8 +581,8 @@ class RouterTests(unittest.TestCase):
             return router.UpstreamResponse(200, {}, json.dumps({
                 "choices": [{
                     "message": {"tool_calls": [
-                        {"index": 0, "id": "call_lookup", "type": "function", "function": {"name": "lookup", "arguments": "{\"q\":\"x\"}"}},
-                        {"index": 1, "id": "call_exec", "type": "function", "function": {"name": "exec", "arguments": "{\"input\":\"pwd\"}"}},
+                        {"id": "call_lookup", "type": "function", "function": {"name": "lookup", "arguments": "{\"q\":\"x\"}"}},
+                        {"id": "call_exec", "type": "function", "function": {"name": "exec", "arguments": "{\"input\":\"pwd\"}"}},
                     ]},
                     "finish_reason": "tool_calls",
                 }],
@@ -603,7 +603,10 @@ class RouterTests(unittest.TestCase):
         output = json.loads(response.body)["output"]
         self.assertEqual([item["type"] for item in output], ["function_call", "custom_tool_call"])
         self.assertEqual((output[0]["name"], output[0]["namespace"], output[0]["arguments"]), ("lookup", "net", "{\"q\":\"x\"}"))
+        self.assertEqual(output[0]["call_id"], "call_lookup")
+        self.assertEqual(json.loads(output[0]["arguments"]), {"q": "x"})
         self.assertEqual((output[1]["name"], output[1]["input"]), ("exec", "pwd"))
+        self.assertEqual(output[1]["call_id"], "call_exec")
         logs = "\n".join(records.output)
         self.assertIn("web_search_skipped=3", logs)
         self.assertIn("web_search_history_skipped=0", logs)
@@ -971,6 +974,51 @@ class RouterTests(unittest.TestCase):
         self.assertEqual(result["output"][1]["input"], "text('ok')")
         restored = router._unpack_reasoning(result["output"][0]["encrypted_content"], body["model"])
         self.assertEqual(restored["reasoning_details"], [{"id": "r1"}])
+
+    def test_nonstream_preserves_calls_to_different_functions_without_indexes(self):
+        body = {
+            "model": "local/deepseek-v4.1-flash",
+            "tools": [
+                {"type": "function", "name": "lookup", "parameters": {"type": "object", "properties": {"q": {"type": "string"}}}},
+                {"type": "function", "name": "fetch", "parameters": {"type": "object", "properties": {"url": {"type": "string"}}}},
+            ],
+            "input": "find and fetch",
+        }
+        registry = router.ToolRegistry.from_body(body)
+        calls = [
+            {"id": "call_lookup", "type": "function", "function": {"name": "lookup", "arguments": "{\"q\":\"x\"}"}},
+            {"id": "call_fetch", "type": "function", "function": {"name": "fetch", "arguments": "{\"url\":\"https://example.test\"}"}},
+        ]
+        upstream = json.dumps({"choices": [{"message": {"tool_calls": calls}, "finish_reason": "tool_calls"}]}).encode()
+
+        result = json.loads(router.chat_response_to_responses(upstream, body["model"], registry))
+        output = result["output"]
+        self.assertEqual([item["type"] for item in output], ["function_call", "function_call"])
+        self.assertEqual([item["name"] for item in output], ["lookup", "fetch"])
+        self.assertEqual([item["call_id"] for item in output], ["call_lookup", "call_fetch"])
+        self.assertEqual([item["arguments"] for item in output], [call["function"]["arguments"] for call in calls])
+        self.assertEqual([json.loads(item["arguments"]) for item in output], [{"q": "x"}, {"url": "https://example.test"}])
+
+    def test_nonstream_keeps_two_calls_to_same_function_independent(self):
+        body = {
+            "model": "local/deepseek-v4.1-flash",
+            "tools": [{"type": "function", "name": "lookup", "parameters": {"type": "object", "properties": {"q": {"type": "string"}}}}],
+            "input": "find two things",
+        }
+        registry = router.ToolRegistry.from_body(body)
+        calls = [
+            {"id": "call_first", "type": "function", "function": {"name": "lookup", "arguments": "{\"q\":\"first\"}"}},
+            {"id": "call_second", "type": "function", "function": {"name": "lookup", "arguments": "{\"q\":\"second\"}"}},
+        ]
+        upstream = json.dumps({"choices": [{"message": {"tool_calls": calls}, "finish_reason": "tool_calls"}]}).encode()
+
+        result = json.loads(router.chat_response_to_responses(upstream, body["model"], registry))
+        output = result["output"]
+        self.assertEqual([item["type"] for item in output], ["function_call", "function_call"])
+        self.assertEqual([item["name"] for item in output], ["lookup", "lookup"])
+        self.assertEqual([item["call_id"] for item in output], ["call_first", "call_second"])
+        self.assertEqual([item["arguments"] for item in output], [call["function"]["arguments"] for call in calls])
+        self.assertEqual([json.loads(item["arguments"]) for item in output], [{"q": "first"}, {"q": "second"}])
 
     def responses_manifest(self):
         record = {
