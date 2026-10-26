@@ -373,6 +373,115 @@ class RouterTests(unittest.TestCase):
             router.ToolRegistry.from_body(conflict)
         self.assertEqual(error.exception.code, "duplicate_tool_name")
 
+        grammar_conflict = copy.deepcopy(FIXTURE["first_turn"])
+        changed_custom = copy.deepcopy(grammar_conflict["input"][0]["tools"][0])
+        changed_custom["tools"][0]["format"] = {
+            "type": "grammar", "syntax": "lark", "definition": 'start: "changed"',
+        }
+        grammar_conflict["input"].append({"type": "additional_tools", "tools": [changed_custom]})
+        with self.assertRaises(router.ProtocolError) as error:
+            router.ToolRegistry.from_body(grammar_conflict)
+        self.assertEqual(error.exception.code, "duplicate_tool_name")
+
+    def test_description_only_duplicate_tools_keep_aliases_and_route_history(self):
+        grammar = {
+            "type": "grammar", "syntax": "lark",
+            "definition": "start: SOURCE\nSOURCE: /[\\s\\S]+/",
+        }
+        parameters = {
+            "type": "object", "properties": {"code": {"type": "string"}}, "required": ["code"],
+        }
+        first_tools = [
+            {"type": "namespace", "name": "functions", "description": "Functions", "tools": [{
+                "type": "custom", "name": "exec", "description": "Old custom description", "format": grammar,
+            }]},
+            {"type": "namespace", "name": "mcp__cua_repl", "description": "REPL", "tools": [{
+                "type": "function", "name": "js", "description": "Old function description", "parameters": parameters,
+            }]},
+        ]
+        updated_tools = copy.deepcopy(first_tools)
+        updated_tools[0]["tools"][0]["description"] = "Latest custom description SYNTHETIC_PRIVATE_DESCRIPTION_MARKER"
+        updated_tools[1]["tools"][0]["description"] = "Latest function description SYNTHETIC_PRIVATE_DESCRIPTION_MARKER"
+        body = {
+            "model": "local/deepseek-v4.1-flash", "stream": True, "tools": first_tools,
+            "input": [
+                {"type": "additional_tools", "tools": updated_tools},
+                {"type": "custom_tool_call", "call_id": "old_exec", "name": "exec", "namespace": "functions", "input": "pwd"},
+                {"type": "custom_tool_call_output", "call_id": "old_exec", "name": "exec", "namespace": "functions", "output": "/tmp"},
+                {"type": "function_call", "call_id": "old_js", "name": "js", "namespace": "mcp__cua_repl", "arguments": "{\"code\":\"1+1\"}"},
+                {"type": "function_call_output", "call_id": "old_js", "name": "js", "namespace": "mcp__cua_repl", "output": "2"},
+                {"type": "message", "role": "user", "content": [{"type": "input_text", "text": "Continue."}]},
+            ],
+        }
+        first_registry = router.ToolRegistry.from_body({"tools": first_tools})
+        registry = router.ToolRegistry.from_body(body)
+        custom = registry.original("custom", "exec", "functions")
+        function = registry.original("function", "js", "mcp__cua_repl")
+
+        self.assertEqual(len(registry.specs), 2)
+        self.assertEqual(len(registry.by_original), 2)
+        self.assertEqual(len(registry.by_upstream), 2)
+        for spec in (custom, function):
+            identity = (spec.kind, spec.namespace, spec.name)
+            self.assertIs(registry.by_original[identity], spec)
+            self.assertIs(registry.by_upstream[spec.upstream_name], spec)
+            self.assertEqual(sum(item is spec for item in registry.specs), 1)
+            self.assertEqual(
+                first_registry.original(spec.kind, spec.name, ".".join(spec.namespace)).upstream_name,
+                spec.upstream_name,
+            )
+        self.assertIn("Latest custom description", custom.description)
+        self.assertNotIn("Old custom description", custom.description)
+        self.assertIn("Latest function description", function.description)
+        self.assertNotIn("Old function description", function.description)
+
+        captured = {}
+
+        def transport(_method, url, _headers, payload, stream):
+            captured.update(url=url, payload=json.loads(payload), stream=stream)
+            return router.UpstreamResponse(200, {}, [
+                sse_frame({"choices": [{"delta": {"tool_calls": [
+                    {"index": 0, "id": "new_exec", "type": "function", "function": {
+                        "name": custom.upstream_name, "arguments": "{\"input\":\"echo done\"}",
+                    }},
+                    {"index": 1, "id": "new_js", "type": "function", "function": {
+                        "name": function.upstream_name, "arguments": "{\"code\":\"done()\"}",
+                    }},
+                ]}}]}),
+                sse_frame({"choices": [{"delta": {}, "finish_reason": "tool_calls"}]}),
+                sse_frame("[DONE]"),
+            ])
+
+        with self.assertLogs(router.log, level="INFO") as records:
+            response = router.route_request(
+                router.PreparedRequest("POST", "/v1/responses", {}, json.dumps(body).encode()),
+                MANIFEST, "test-key", transport,
+            )
+        self.assertEqual(response.status, 200)
+        self.assertNotIn("SYNTHETIC_PRIVATE_DESCRIPTION_MARKER", "\n".join(records.output))
+        self.assertEqual(captured["url"], "https://api.example.com/v1/chat/completions")
+        self.assertTrue(captured["stream"])
+        sent_tools = {tool["function"]["name"]: tool["function"] for tool in captured["payload"]["tools"]}
+        self.assertEqual(set(sent_tools), {custom.upstream_name, function.upstream_name})
+        self.assertIn("Latest custom description", sent_tools[custom.upstream_name]["description"])
+        self.assertIn("Latest function description", sent_tools[function.upstream_name]["description"])
+        messages = captured["payload"]["messages"]
+        history_calls = [call for message in messages for call in message.get("tool_calls", [])]
+        self.assertEqual(
+            [call["function"]["name"] for call in history_calls],
+            [custom.upstream_name, function.upstream_name],
+        )
+        self.assertEqual([message["tool_call_id"] for message in messages if message["role"] == "tool"], ["old_exec", "old_js"])
+        events = response_events(b"".join(response.body))
+        self.assertEqual(events[-1]["type"], "response.completed")
+        output = events[-1]["response"]["output"]
+        self.assertEqual(
+            [(item["type"], item["name"], item.get("namespace")) for item in output],
+            [("custom_tool_call", "exec", "functions"), ("function_call", "js", "mcp__cua_repl")],
+        )
+        self.assertEqual(output[0]["input"], "echo done")
+        self.assertEqual(output[1]["arguments"], "{\"code\":\"done()\"}")
+
     def test_stream_maps_fragmented_custom_and_function_calls(self):
         body = FIXTURE["first_turn"]
         registry = router.ToolRegistry.from_body(body)

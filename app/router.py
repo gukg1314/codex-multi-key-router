@@ -522,16 +522,33 @@ class ToolRegistry:
             context = "Namespace: " + ".".join(namespace) + "."
             inherited = " ".join(value for value in namespace_descriptions if value)
             description = " ".join(value for value in (context, inherited, description) if value)
+        # 宿主会在历史中追加新版说明；只把参数和输入语法的变化视为定义冲突。
         definition = json.dumps(
-            {"kind": kind, "name": name, "description": str(source.get("description") or ""), "parameters": source.get("parameters"), "format": input_format},
+            {"kind": kind, "name": name, "parameters": source.get("parameters"), "format": input_format},
             ensure_ascii=False, sort_keys=True, separators=(",", ":"),
         )
         identity = (kind, namespace, name)
         existing = self.by_original.get(identity)
         if existing:
-            if self._definitions[identity] == definition:
+            if self._definitions[identity] != definition:
+                log.warning(
+                    "桥接工具定义冲突 kind=%s namespace=%r name=%r old_schema=%s new_schema=%s",
+                    kind, ".".join(namespace) or "-", name,
+                    hashlib.sha256(self._definitions[identity].encode()).hexdigest()[:12],
+                    hashlib.sha256(definition.encode()).hexdigest()[:12],
+                )
+                raise ProtocolError("duplicate_tool_name", f"工具名称 {name} 有冲突，无法安全映射。")
+            if existing.description == description:
                 return
-            raise ProtocolError("duplicate_tool_name", f"工具名称 {name} 有冲突，无法安全映射。")
+            spec = ToolSpec(kind, name, namespace, existing.upstream_name, description, parameters)
+            self.specs[self.specs.index(existing)] = spec
+            self.by_upstream[spec.upstream_name] = spec
+            self.by_original[identity] = spec
+            log.info(
+                "桥接工具说明已更新 kind=%s namespace=%r name=%r old_chars=%d new_chars=%d",
+                kind, ".".join(namespace) or "-", name, len(existing.description), len(description),
+            )
+            return
         used = set(self.by_upstream)
         upstream_name = _tool_alias(kind, namespace, name, used)
         spec = ToolSpec(kind, name, namespace, upstream_name, description, parameters)
